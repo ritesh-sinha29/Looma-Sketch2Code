@@ -1,16 +1,16 @@
+import { useRoom, useSelf } from "@liveblocks/react";
+import { LiveblocksYjsProvider } from "@liveblocks/yjs";
+import { useEffect, useState } from "react";
 import {
+  createTLStore,
+  defaultShapeUtils,
+  react,
   type TLAnyShapeUtilConstructor,
   type TLInstancePresence,
   type TLRecord,
   type TLStoreWithStatus,
-  createTLStore,
-  defaultShapeUtils,
-  react,
   transact,
 } from "tldraw";
-import { useRoom, useSelf } from "@liveblocks/react";
-import { LiveblocksYjsProvider } from "@liveblocks/yjs";
-import { useEffect, useState } from "react";
 import * as Y from "yjs";
 
 export function useYjsStore({
@@ -56,7 +56,7 @@ export function useYjsStore({
         // but CAREFULLY preserve instance/session state which store.clear() wipes.
         // For simplicity/safety to fix the crash, we just PUT the remote records.
         // Tldraw handles merging.
-        
+
         const records: TLRecord[] = [];
         yMapRecords.forEach((record) => {
           records.push(record);
@@ -66,9 +66,9 @@ export function useYjsStore({
         // Seed the Yjs map with the default local records
         const initialRecords = store.allRecords();
         initialRecords.forEach((record) => {
-           // Only sync document-scoped records ideally, but broadly sync for now 
-           // to ensure consistent initial state.
-           yMapRecords.set(record.id, record);
+          // Only sync document-scoped records ideally, but broadly sync for now
+          // to ensure consistent initial state.
+          yMapRecords.set(record.id, record);
         });
       }
     });
@@ -110,15 +110,17 @@ export function useYjsStore({
         });
       });
     };
-    // @ts-ignore - store.listen types might slightly vary across versions
-    unsubs.push(store.listen(handleStoreUpdate, { source: "user", scope: "document" }));
+    // Listen for Store updates and sync to Yjs
+    unsubs.push(
+      store.listen(handleStoreUpdate, { source: "user", scope: "document" }),
+    );
 
     // 4. Presence Sync
     const awareness = yProvider.awareness;
 
     const removePresenceDerivation = react("when presence changes", () => {
       const presence = store.get(
-        createTLStore().schema.types.instance_presence.createId(store.id)
+        createTLStore().schema.types.instance_presence.createId(store.id),
       );
       if (presence) {
         awareness.setLocalStateField("presence", presence as any);

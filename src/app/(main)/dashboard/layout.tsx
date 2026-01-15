@@ -1,19 +1,19 @@
 "use client";
 
-import { useStoreUser } from "@/hooks/user-store";
+import { RedirectToSignIn } from "@clerk/clerk-react";
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { api } from "../../../../convex/_generated/api";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { useStoreUser } from "@/hooks/user-store";
 import { AppSidebar } from "@/modules/dashboard/appsidebar";
 import { DashboardBreadcrumbs } from "@/modules/dashboard/BreadCrumbs";
-import { Separator } from "@/components/ui/separator";
-import { RedirectToSignIn } from "@clerk/clerk-react";
+import { api } from "../../../../convex/_generated/api";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { isLoading: isStoreLoading } = useStoreUser();

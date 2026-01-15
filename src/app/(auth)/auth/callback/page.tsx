@@ -1,11 +1,10 @@
 "use client";
 
-import { useQuery, useMutation } from "convex/react";
-import { useEffect } from "react";
+import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
-import { api } from "../../../../../convex/_generated/api";
-
+import { useEffect } from "react";
 import { useStoreUser } from "@/hooks/user-store";
+import { api } from "../../../../../convex/_generated/api";
 
 const AuthCallback = () => {
   const { isAuthenticated, isLoading: isStoreLoading } = useStoreUser();

@@ -1,8 +1,6 @@
 "use client";
-import React, { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { Doc } from "../../../convex/_generated/dataModel";
+import { formatDistanceToNow } from "date-fns";
 import {
   Check,
   ChevronsUpDown,
@@ -13,21 +11,15 @@ import {
   LucideSquarePen,
 } from "lucide-react";
 import Link from "next/link";
+import React, { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import {
   Command,
   CommandEmpty,
@@ -37,23 +29,31 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { formatDistanceToNow } from "date-fns";
+import { Switch } from "@/components/ui/switch";
 import { AVAILABLE_TAGS } from "@/lib/Static-items";
+import { cn } from "@/lib/utils";
+import { api } from "../../../convex/_generated/api";
+import type { Doc } from "../../../convex/_generated/dataModel";
 
 const DashboardPage = () => {
   const user: Doc<"users"> | undefined | null = useQuery(
-    api.users.getCurrentUser
+    api.users.getCurrentUser,
   );
 
   const projects = useQuery(api.projects.getProjects);
@@ -107,7 +107,7 @@ const DashboardPage = () => {
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   };
 
@@ -201,7 +201,7 @@ const DashboardPage = () => {
                                     "mr-2 h-4 w-4",
                                     selectedTags.includes(tag)
                                       ? "opacity-100"
-                                      : "opacity-0"
+                                      : "opacity-0",
                                   )}
                                 />
                                 {tag}
@@ -334,9 +334,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        <div>
-          
-        </div>
+        <div></div>
       </div>
     </div>
   );

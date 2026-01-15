@@ -1,4 +1,27 @@
 "use client";
+import { SignOutButton } from "@clerk/clerk-react";
+import { useQuery } from "convex/react";
+import {
+  ChevronsUpDown,
+  FolderCode,
+  Github,
+  LucideApple,
+  LucideSettings,
+  User,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -9,31 +32,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
-import { usePathname } from "next/navigation";
-import { Doc } from "../../../convex/_generated/dataModel";
-import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  ChevronsUpDown,
-  FolderCode,
-  Github,
-  LucideApple,
-  User,
-} from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { SignOutButton } from "@clerk/clerk-react";
+import { api } from "../../../convex/_generated/api";
+import type { Doc } from "../../../convex/_generated/dataModel";
 
 export const AppSidebar = () => {
   const { theme, setTheme } = useTheme();
@@ -41,7 +42,7 @@ export const AppSidebar = () => {
   const pathname = usePathname();
 
   const user: Doc<"users"> | undefined | null = useQuery(
-    api.users.getCurrentUser
+    api.users.getCurrentUser,
   );
 
   if (user === null) return null;
@@ -154,6 +155,30 @@ export const AppSidebar = () => {
           >
             <LucideApple className="h-5 w-5" />
             <span className="text-base">Projects</span>
+
+            {/* Gradient Active Indicator */}
+            <span
+              className="
+        pointer-events-none absolute inset-0 -z-10
+        opacity-0 transition-opacity
+        group-data-[active=true]:opacity-100
+        bg-linear-to-l from-blue-600/50 via-transparent  to-transparent
+      "
+            />
+          </Link>
+        </SidebarMenuButton>
+
+        <SidebarMenuButton
+          asChild
+          data-active={isActive("/dashboard/settings")}
+          className="group relative overflow-hidden"
+        >
+          <Link
+            href="/dashboard/settings"
+            className="relative z-10 flex items-center gap-3 px-3 py-2 data-[active=true]:text-white text-muted-foreground"
+          >
+            <LucideSettings className="h-5 w-5" />
+            <span className="text-base">Settings</span>
 
             {/* Gradient Active Indicator */}
             <span

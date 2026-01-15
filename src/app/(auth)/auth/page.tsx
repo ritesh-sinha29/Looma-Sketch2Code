@@ -1,12 +1,12 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { SignInButton } from "@clerk/nextjs";
 import { useConvexAuth } from "convex/react";
 import { LucideGithub } from "lucide-react";
 import Image from "next/image";
-import React from "react";
 import { useRouter } from "next/navigation";
+import React from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 const AuthPage = () => {
   const router = useRouter();

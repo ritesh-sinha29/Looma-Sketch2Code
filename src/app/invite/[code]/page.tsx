@@ -1,4 +1,17 @@
 "use client";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import {
+  Loader2,
+  LucideCheck,
+  LucideInfo,
+  LucideLogIn,
+  LucideX,
+} from "lucide-react";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,15 +19,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Image from "next/image";
-import React, { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useQuery, useMutation, useConvexAuth } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Loader2, LucideX, LucideInfo, LucideLogIn, LucideCheck } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
+import { api } from "../../../../convex/_generated/api";
 
 const InvitePage = () => {
   const params = useParams();
@@ -181,7 +187,9 @@ const InvitePage = () => {
             />
           </div>
           <div className="text-center -mt-2">
-            <h2 className="text-xl font-medium capitalize text-black">{project.projectName}</h2>
+            <h2 className="text-xl font-medium capitalize text-black">
+              {project.projectName}
+            </h2>
             <p className="text-muted-foreground text-sm mt-1">
               Invited by{" "}
               <span className="text-blue-500 font-medium">

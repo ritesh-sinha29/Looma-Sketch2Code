@@ -1,5 +1,5 @@
-import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 
 // =======================
 // Create Project
@@ -29,9 +29,8 @@ export const createProject = mutation({
       throw new Error("Unauthorized");
     }
 
-
-    const inviteCode = Math.random().toString(36).substring(2, 10); 
-    const inviteLink = `http://localhost:3000/invite/${inviteCode}`; 
+    const inviteCode = Math.random().toString(36).substring(2, 10);
+    const inviteLink = `http://localhost:3000/invite/${inviteCode}`;
 
     const projectId = await ctx.db.insert("projects", {
       projectName: args.name,
@@ -64,7 +63,7 @@ export const getProjects = query({
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -133,7 +132,7 @@ export const joinProject = mutation({
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -183,7 +182,7 @@ export const getOwnerAndProjectMembers = query({
     }
 
     const members = await Promise.all(
-      (project.projectMembers || []).map((memberId) => ctx.db.get(memberId))
+      (project.projectMembers || []).map((memberId) => ctx.db.get(memberId)),
     );
 
     return {
@@ -192,7 +191,6 @@ export const getOwnerAndProjectMembers = query({
     };
   },
 });
-
 
 // ===============================
 // REMOVE PROJECT MEMBER
@@ -212,7 +210,7 @@ export const removeMember = mutation({
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -230,7 +228,7 @@ export const removeMember = mutation({
     }
 
     const newMembers = (project.projectMembers || []).filter(
-      (memberId) => memberId !== args.memberId
+      (memberId) => memberId !== args.memberId,
     );
 
     await ctx.db.patch(args.projectId, {
@@ -253,7 +251,7 @@ export const getMemberProjects = query({
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -261,13 +259,14 @@ export const getMemberProjects = query({
       throw new Error("User not found");
     }
 
-    // Since we can't easily index arrays in Convex for 'contains', 
+    // Since we can't easily index arrays in Convex for 'contains',
     // we fetch and filter. For scale, we'd use a separate joining table.
     const allProjects = await ctx.db.query("projects").collect();
 
-    return allProjects.filter((project) => 
-      project.ownerId !== user._id && 
-      project.projectMembers?.includes(user._id)
+    return allProjects.filter(
+      (project) =>
+        project.ownerId !== user._id &&
+        project.projectMembers?.includes(user._id),
     );
   },
 });

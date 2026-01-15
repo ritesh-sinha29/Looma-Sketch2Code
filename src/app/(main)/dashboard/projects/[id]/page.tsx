@@ -1,12 +1,5 @@
 "use client";
-import { useParams } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "../../../../../../convex/_generated/api";
-import { Id } from "../../../../../../convex/_generated/dataModel";
-import { Spinner } from "@/components/ui/spinner";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from "next/link";
 import {
   LucideEdit,
   LucideExternalLink,
@@ -14,9 +7,16 @@ import {
   LucideLock,
   Trash2,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 import { InviteDialog } from "@/modules/projects/inviteDialog";
+import { api } from "../../../../../../convex/_generated/api";
+import type { Id } from "../../../../../../convex/_generated/dataModel";
 
 const ProjectPage = () => {
   const params = useParams<{ id: Id<"projects"> }>();
@@ -57,7 +57,7 @@ const ProjectPage = () => {
               "flex items-center gap-2 py-1 px-3 text-xs border rounded-full",
               project?.isPublic
                 ? "border-green-500 text-green-600 bg-green-50"
-                : "border-orange-500 text-orange-600 bg-orange-50"
+                : "border-orange-500 text-orange-600 bg-orange-50",
             )}
           >
             {project?.isPublic ? (

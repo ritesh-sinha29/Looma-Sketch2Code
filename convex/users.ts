@@ -1,6 +1,5 @@
-import { internalQuery, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-
+import { internalQuery, mutation, query } from "./_generated/server";
 
 // ==================================
 // NEW USER
@@ -19,7 +18,7 @@ export const createNewUser = mutation({
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -73,7 +72,7 @@ export const getCurrentUser = query({
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -92,20 +91,20 @@ export const updateUserTheme = mutation({
   handler: async (ctx, args) => {
     // Check if the user exists
     const user = await ctx.db.get(args.userId);
-    
+
     if (!user) {
       throw new Error("User not found");
     }
 
     // Verify authentication matches or just allow if we trust the client to pass the right ID (usually better to check identity)
-     const identity = await ctx.auth.getUserIdentity();
+    const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Unauthenticated");
     }
 
     // In a real app we should check if identity.tokenIdentifier matches user.tokenIdentifier
-    if(user.tokenIdentifier !== identity.tokenIdentifier) {
-        throw new Error("Unauthorized");
+    if (user.tokenIdentifier !== identity.tokenIdentifier) {
+      throw new Error("Unauthorized");
     }
 
     await ctx.db.patch(args.userId, {
@@ -124,7 +123,7 @@ export const completeOnboarding = mutation({
   },
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId);
-    
+
     if (!user) {
       throw new Error("User not found");
     }
@@ -133,9 +132,9 @@ export const completeOnboarding = mutation({
     if (!identity) {
       throw new Error("Unauthenticated");
     }
-    
-    if(user.tokenIdentifier !== identity.tokenIdentifier) {
-        throw new Error("Unauthorized");
+
+    if (user.tokenIdentifier !== identity.tokenIdentifier) {
+      throw new Error("Unauthorized");
     }
 
     await ctx.db.patch(args.userId, {

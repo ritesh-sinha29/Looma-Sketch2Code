@@ -1,36 +1,28 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
 import { useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
-import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "next-themes";
+import { AnimatePresence, motion } from "framer-motion";
 import {
+  ArrowRight,
   Check,
   Copy,
-  Moon,
-  Sun,
-  Laptop,
-  ArrowRight,
   Globe,
+  Laptop,
   Lock,
-  Sparkles,
-  Rocket,
   LucideChevronLeft,
+  Moon,
+  Rocket,
+  Sparkles,
+  Sun,
 } from "lucide-react";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { AVAILABLE_TAGS } from "@/lib/Static-items";
-import { Id } from "../../../../convex/_generated/dataModel";
-import Image from "next/image";
 import {
   Command,
   CommandDialog,
@@ -40,6 +32,13 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from "@/components/ui/switch";
+import { AVAILABLE_TAGS } from "@/lib/Static-items";
+import { api } from "../../../../convex/_generated/api";
+import type { Id } from "../../../../convex/_generated/dataModel";
 
 const OnboardPage = () => {
   const { userId } = useParams();

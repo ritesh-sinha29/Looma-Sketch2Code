@@ -1,6 +1,14 @@
 "use client";
 
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
   LucideCopy,
   LucideInfo,
   LucideMail,
@@ -9,14 +17,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 
 type InviteDialogProps = {
   open: boolean;
@@ -49,12 +49,10 @@ export function InviteDialog({
           </Button>
         </div>
 
-        <p className="flex gap-2 text-xs text-muted-foreground ">
-          <LucideInfo className="w-4 h-4 " /> Inviting to team , means they have
-          full access to your project
-        </p>
+        <p className="flex gap-2 text-xs text-muted-foreground "><LucideInfo className="w-4 h-4 " /> Inviting to team , means they have full access to your project</p>
         {/* Share options */}
         <div className="flex justify-center gap-6 pt-4">
+      
           {/* WhatsApp */}
           <Button
             variant="ghost"
@@ -62,7 +60,7 @@ export function InviteDialog({
             onClick={() =>
               window.open(
                 `https://wa.me/?text=${encodeURIComponent(inviteLink)}`,
-                "_blank",
+                "_blank"
               )
             }
           >
@@ -76,7 +74,7 @@ export function InviteDialog({
             onClick={() =>
               window.open(
                 `mailto:?subject=Join my project&body=${inviteLink}`,
-                "_blank",
+                "_blank"
               )
             }
           >

@@ -1,25 +1,36 @@
 "use client";
+import React, { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
-import { formatDistanceToNow } from "date-fns";
+import { api } from "../../../convex/_generated/api";
+import { Doc } from "../../../convex/_generated/dataModel";
 import {
   Check,
   ChevronsUpDown,
   LucideActivity,
+  LucideCloudBackup,
+  LucideMenu,
   LucideMoveRight,
   LucidePaintBucket,
   LucidePlus,
   LucideSquarePen,
+  LucideType,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   Command,
   CommandEmpty,
@@ -29,27 +40,22 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { AVAILABLE_TAGS } from "@/lib/Static-items";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { api } from "../../../convex/_generated/api";
-import type { Doc } from "../../../convex/_generated/dataModel";
+import { formatDistanceToNow } from "date-fns";
+import { AVAILABLE_TAGS } from "@/lib/Static-items";
+import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const DashboardPage = () => {
   const user: Doc<"users"> | undefined | null = useQuery(
@@ -58,6 +64,7 @@ const DashboardPage = () => {
 
   const projects = useQuery(api.projects.getProjects);
   const createProject = useMutation(api.projects.createProject);
+  const savedStyles = useQuery(api.styleGuides.getUserStyleGuides);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [projectName, setProjectName] = useState("");
@@ -284,7 +291,7 @@ const DashboardPage = () => {
                 >
                   <Card
                     className={`h-[180px] w-[250px] shrink-0 bg-linear-to-br ${gradient} 
-            hover:scale-[1.02] transition-transform cursor-pointer p-2! overflow-hidden`}
+            hover:scale-[1.02] transition-transform cursor-pointer p-2! overflow-hidden relative`}
                   >
                     <CardHeader>
                       <h3 className="text-base font-semibold truncate capitalize text-center ">
@@ -294,13 +301,31 @@ const DashboardPage = () => {
                     <CardContent className="-mt-4 relative">
                       <div className="w-22 h-22 bg-white/30 blur-in-3xl rounded-full mx-auto absolute left-1/2  -translate-x-1/2"></div>
                     </CardContent>
-                    <CardFooter className="mt-auto p-0! mx-auto">
-                      <p className="flex items-center gap-1 text-xs text-muted-foreground tracking-tight">
-                        <LucideSquarePen className="h-4 w-4" /> Updated:{"  "}
+                    <CardFooter className="absolute bottom-0 left-0 right-0 p-2.5! bg-black/10 backdrop-blur-xs border-t border-white/10 flex justify-between items-center transition-colors group-hover:bg-black/10">
+                      <p className="flex items-center gap-1.5 text-[11px] font-medium text-foreground/60">
+                        <LucideSquarePen className="h-3.5 w-3.5" />
                         {formatDistanceToNow(new Date(project.updatedAt), {
                           addSuffix: true,
                         })}
                       </p>
+                      <div className="flex items-center -space-x-2">
+                        {project.projectMembers?.slice(0, 3).map((member) => (
+                          <Avatar
+                            key={member.userId}
+                            className="w-8 h-8 border border-white/20"
+                          >
+                            <AvatarImage src={member.avatar} />
+                            <AvatarFallback>?</AvatarFallback>
+                          </Avatar>
+                        ))}
+
+                        {project.projectMembers &&
+                          project.projectMembers.length > 3 && (
+                            <div className="w-6 h-6 rounded-full bg-white/50 border border-white/20 flex items-center justify-center text-[10px] font-bold">
+                              +{project.projectMembers.length - 3}
+                            </div>
+                          )}
+                      </div>
                     </CardFooter>
                   </Card>
                 </Link>
@@ -334,7 +359,83 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        <div></div>
+        <div className="mt-6">
+          {savedStyles === undefined ? (
+            <div className="flex justify-center p-10">
+              <Spinner className="h-8 w-8 text-muted-foreground" />
+            </div>
+          ) : savedStyles.length === 0 ? (
+            <div className="text-center py-10 bg-muted/30 rounded-xl border border-dashed">
+              <p className="text-muted-foreground">
+                No style guides saved yet.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+              {savedStyles.map((style) => (
+                <Card
+                  key={style._id}
+                  className="overflow-hidden hover:shadow-md transition-shadow p-0!"
+                >
+                  <CardHeader className="grid grid-cols-3 hover:grid-cols-[2fr_1fr_1fr] transition-all duration-500! ease-in-out p-0! gap-0! bg-muted">
+                    {/* 1 */}
+                    <div
+                      className="h-16"
+                      style={{ backgroundColor: style.colors?.primary?.hex }}
+                      title="Primary"
+                    />
+
+                    {/* 2 */}
+                    <div
+                      className="h-16"
+                      style={{ backgroundColor: style.colors?.secondary?.hex }}
+                      title="Secondary"
+                    />
+                    {/* 3 */}
+
+                    <div
+                      className="h-16"
+                      style={{ backgroundColor: style.colors?.accent?.hex }}
+                      title="Accent"
+                    />
+                  </CardHeader>
+                  <CardContent className="py-0! px-4 -mt-3 ">
+                    <div className="flex items-center justify-between w-full text-sm capitalize">
+                      <p>{style.name}</p>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="cursor-pointer"
+                      >
+                        <LucideMenu className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <span className="text-xs font-normal text-muted-foreground">
+                      <LucideCloudBackup className="h-4 w-4 inline mr-1" />{" "}
+                      {formatDistanceToNow(style.createdAt)} ago
+                    </span>
+                    <Separator className="my-2" />
+                  </CardContent>
+                  <CardFooter className="flex flex-col text-left pb-3! px-4 -mt-5 space-y-2">
+                    <p className="text-sm text-muted-foreground mr-auto">
+                      <LucideType className="h-4 w-4 inline mr-3" />
+                      Typography
+                    </p>
+
+                    <div className="text-sm text-muted-foreground mr-auto">
+                      <p className="truncate">
+                        <span className="font-semibold text-foreground">
+                          Fonts:
+                        </span>{" "}
+                        {style.fonts?.map((f: any) => f.name).join(", ")}
+                      </p>
+                    </div>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

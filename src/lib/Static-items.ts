@@ -1,3 +1,5 @@
+import z from "zod";
+
 export const AVAILABLE_TAGS = [
   "Productivity",
   "AI",
@@ -55,3 +57,28 @@ export const AVAILABLE_TAGS = [
   "Non-profit",
   "Community",
 ];
+
+export const styleGuideSchema = z.object({
+  primary: z.object({
+    name: z.string(), // e.g., "Royal Blue"
+    hex: z.string(), // e.g., "#4169E1"
+  }),
+  secondary: z.object({
+    name: z.string(),
+    hex: z.string(),
+  }),
+  accent: z.object({
+    name: z.string(),
+    hex: z.string(),
+  }),
+  others: z.array(z.object({
+    name: z.string(),
+    hex: z.string(),
+  })),
+  fonts: z.array(z.object({
+    name: z.string(), // e.g., "Inter", "Roboto"
+    family: z.string(), // e.g., "sans-serif", "serif", "monospace"
+  })),
+});
+
+export type StyleGuideData = z.infer<typeof styleGuideSchema>;

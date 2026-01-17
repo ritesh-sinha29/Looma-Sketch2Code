@@ -1,21 +1,35 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { SignInButton } from "@clerk/nextjs";
 import { useConvexAuth } from "convex/react";
-import { LucideGithub } from "lucide-react";
+import { Loader2, LucideGithub } from "lucide-react";
 import Image from "next/image";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 
 const AuthPage = () => {
   const router = useRouter();
   const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth();
 
-  if (isAuthenticated) {
-    toast.success("Session restored successfully!");
-    router.push("/auth/callback");
-    return;
+  useEffect(() => {
+    if (!isAuthLoading && isAuthenticated) {
+      toast.dismiss("checking-session");
+      toast.success("Session restored successfully!");
+      router.push("/auth/callback");
+    }
+  }, [isAuthenticated, isAuthLoading, router]);
+
+  if (isAuthLoading) {
+    toast.loading("Checking session...", {
+      id: "checking-session",
+    });
+    // return (
+    //   <div className="flex items-center justify-center h-screen w-full bg-black text-white">
+    //     <Loader2 className="animate-spin w-5 h-5 inline mr-3" /> Checking
+    //     session...
+    //   </div>
+    // );
   }
 
   return (

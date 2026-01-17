@@ -1,8 +1,9 @@
 import { useUser } from "@clerk/clerk-react";
-import { useConvexAuth, useMutation } from "convex/react";
+import { useConvexAuth } from "convex/react";
 import { useEffect, useState } from "react";
+import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
+import { Id } from "../../convex/_generated/dataModel";
 
 // =============================================================
 /**
@@ -29,7 +30,7 @@ export function useStoreUser() {
 
   useEffect(() => {
     if (!isAuthenticated || !isClerkLoaded) return;
-    if (userId) return;
+    if (userId) return; 
 
     let cancelled = false;
 

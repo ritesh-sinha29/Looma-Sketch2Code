@@ -1,26 +1,28 @@
-import { useRoom, useSelf } from "@liveblocks/react";
-import { LiveblocksYjsProvider } from "@liveblocks/yjs";
-import { useEffect, useState } from "react";
 import {
-  createTLStore,
-  defaultShapeUtils,
-  react,
   type TLAnyShapeUtilConstructor,
   type TLInstancePresence,
   type TLRecord,
   type TLStoreWithStatus,
+  createTLStore,
+  defaultShapeUtils,
+  react,
   transact,
 } from "tldraw";
+import { useRoom } from "@liveblocks/react";
+import { LiveblocksYjsProvider } from "@liveblocks/yjs";
+import { useEffect, useState } from "react";
 import * as Y from "yjs";
 
 export function useYjsStore({
   roomId = "example",
   version = 1,
   customShapeUtils = [],
+  userInfo,
 }: Partial<{
   roomId: string;
   version: number;
   customShapeUtils: TLAnyShapeUtilConstructor[];
+  userInfo: { id: string; name: string; color: string; avatar?: string };
 }>) {
   const [store] = useState(() => {
     const store = createTLStore({
@@ -36,7 +38,7 @@ export function useYjsStore({
   const room = useRoom();
 
   // Use selector to only re-render if user info changes, not on every presence update (cursor move)
-  const userInfo = useSelf((me) => me.info);
+  // const userInfo = useSelf((me) => me.info);
 
   useEffect(() => {
     setStoreWithStatus({ status: "loading" });
@@ -56,7 +58,7 @@ export function useYjsStore({
         // but CAREFULLY preserve instance/session state which store.clear() wipes.
         // For simplicity/safety to fix the crash, we just PUT the remote records.
         // Tldraw handles merging.
-
+        
         const records: TLRecord[] = [];
         yMapRecords.forEach((record) => {
           records.push(record);
@@ -66,9 +68,9 @@ export function useYjsStore({
         // Seed the Yjs map with the default local records
         const initialRecords = store.allRecords();
         initialRecords.forEach((record) => {
-          // Only sync document-scoped records ideally, but broadly sync for now
-          // to ensure consistent initial state.
-          yMapRecords.set(record.id, record);
+           // Only sync document-scoped records ideally, but broadly sync for now 
+           // to ensure consistent initial state.
+           yMapRecords.set(record.id, record);
         });
       }
     });
@@ -110,48 +112,56 @@ export function useYjsStore({
         });
       });
     };
-    // Listen for Store updates and sync to Yjs
-    unsubs.push(
-      store.listen(handleStoreUpdate, { source: "user", scope: "document" }),
-    );
+    // @ts-ignore - store.listen types might slightly vary across versions
+    unsubs.push(store.listen(handleStoreUpdate, { source: "user", scope: "document" }));
 
-    // 4. Presence Sync
-    const awareness = yProvider.awareness;
-
-    const removePresenceDerivation = react("when presence changes", () => {
-      const presence = store.get(
-        createTLStore().schema.types.instance_presence.createId(store.id),
-      );
-      if (presence) {
-        awareness.setLocalStateField("presence", presence as any);
-        if (userInfo) {
-          awareness.setLocalStateField("user", userInfo as any);
-        }
-      }
-    });
-    unsubs.push(removePresenceDerivation);
-
-    const handleAwarenessUpdate = () => {
-      const states = awareness.getStates();
-
-      transact(() => {
-        const records: TLInstancePresence[] = [];
-
-        states.forEach((state: any, clientID) => {
-          if (clientID === awareness.doc.clientID) return;
-
-          const presence = state.presence as TLInstancePresence;
-          if (presence) {
-            records.push(presence);
-          }
-        });
-
-        if (records.length) store.put(records);
-      });
-    };
-
-    awareness.on("update", handleAwarenessUpdate);
-    unsubs.push(() => awareness.off("update", handleAwarenessUpdate));
+    // 4. Presence Sync (Disabled in favor of Liveblocks Presence + Custom Cursors)
+    // const awareness = yProvider.awareness;
+    //
+    // const removePresenceDerivation = react("when presence changes", () => {
+    //   const presence = store.get(
+    //     createTLStore().schema.types.instance_presence.createId(store.id)
+    //   );
+    //   if (presence) {
+    //     awareness.setLocalStateField("presence", presence as any);
+    //     // const userInfo = useSelf((me) => me.info); // Not accessible here without hook
+    //     // But we passed userInfo in props? 
+    //     // Anyhow, disabled.
+    //   }
+    // });
+    // unsubs.push(removePresenceDerivation);
+    //
+    // const handleAwarenessUpdate = () => {
+    //   const states = awareness.getStates();
+    //
+    //   transact(() => {
+    //     const records: TLInstancePresence[] = [];
+    //
+    //     states.forEach((state: any, clientID) => {
+    //       if (clientID === awareness.doc.clientID) return;
+    //
+    //       const presence = state.presence as TLInstancePresence;
+    //       const user = state.user;
+    //       
+    //       if (presence && user) {
+    //          records.push({
+    //            ...presence,
+    //            userId: user.id,
+    //            userName: user.name,
+    //            chatMessage: "", // Required types
+    //            color: user.color, 
+    //          });
+    //       } else if (presence) {
+    //         records.push(presence);
+    //       }
+    //     });
+    //
+    //     if (records.length) store.put(records);
+    //   });
+    // };
+    //
+    // awareness.on("update", handleAwarenessUpdate);
+    // unsubs.push(() => awareness.off("update", handleAwarenessUpdate));
 
     setStoreWithStatus({
       store,

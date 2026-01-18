@@ -2,7 +2,7 @@
 
 import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
-// import { google } from '@ai-sdk/google';
+//import { google } from '@ai-sdk/google';
 import { z } from 'zod';
 
 // Schema for exactly what you need
@@ -37,7 +37,8 @@ export const generateStyleGuide = async (images: string[]): Promise<StyleGuideDa
   }
   console.log("Images processed ---------------");
   const result = await generateObject({
-    model: openai('gpt-4o-mini'),
+   model: openai('gpt-4o-mini'),
+    //model: google('gemini-2.5-flash'),
     schema: styleGuideSchema,
     messages: [
       {

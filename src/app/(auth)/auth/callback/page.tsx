@@ -3,7 +3,7 @@
 import { useQuery, useMutation } from "convex/react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "../../../../../convex/_generated/api";
+import { api } from "@convex/_generated/api";
 
 import { useStoreUser } from "@/hooks/user-store";
 

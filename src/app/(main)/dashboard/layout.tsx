@@ -4,7 +4,7 @@ import { useStoreUser } from "@/hooks/user-store";
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { api } from "../../../../convex/_generated/api";
+import { api } from "@convex/_generated/api";
 import {
   SidebarInset,
   SidebarProvider,

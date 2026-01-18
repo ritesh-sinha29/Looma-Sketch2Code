@@ -15,74 +15,52 @@ export default defineSchema({
     // PLAN TYPE
     type: v.union(v.literal("free"), v.literal("pro"), v.literal("elite")),
     // PROJECT LIMIT
-    limit: v.union(v.literal(2), v.literal(5), v.literal(15)),
+    limit: v.union(v.literal(3), v.literal(6), v.literal(12)),
     createdAt: v.number(),
     updatedAt: v.number(),
     //   INDEXES.....
   }).index("by_token", ["tokenIdentifier"]),
-
-  teams: defineTable({
-    name: v.string(),
-    members: v.array(v.string()), // Clerk user IDs
-    createdAt: v.number(),
-  }),
 
   projects: defineTable({
     projectName: v.string(),
     projectDescription: v.optional(v.string()),
     projectTags: v.optional(v.array(v.string())), // min 2 max 5
     ownerId: v.id("users"),
-    teamId: v.optional(v.id("teams")), // Added for team support
     ownerEmail: v.string(),
     inviteCode: v.optional(v.string()),
     inviteLink: v.optional(v.string()), // auto creates random invite link unique !
     isPublic: v.boolean(),
-    projectMembers: v.optional(v.array(v.id("users"))),
+    // Now we store id + avatar 
+    projectMembers: v.optional(
+      v.array(
+        v.object({
+          userId: v.id("users"),
+          avatar: v.string(),
+        }),
+      ),
+    ),
+    // Generated code storage
+    generatedCode: v.optional(
+      v.object({
+        code: v.string(),
+        description: v.string(),
+        analysisData: v.any(),
+        generatedAt: v.number(),
+      })
+    ),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_owner", ["ownerId"])
-    .index("by_invite_code", ["inviteCode"])
-    .index("by_team", ["teamId"]), // Index for team lookups
+    .index("by_invite_code", ["inviteCode"]),
 
-  canvases: defineTable({
-    projectId: v.id("projects"),
-    title: v.string(),
-    tldrawSnapshot: v.any(), // tldraw JSON state
-    updatedAt: v.number(),
-  }),
-
-  codeWorkspaces: defineTable({
-    projectId: v.id("projects"),
-    files: v.any(), // Dynamic file structure
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  }),
-
+  // Style guide table
   styleGuides: defineTable({
-    projectId: v.id("projects"),
-    imageUrl: v.string(),
-    colors: v.array(
-      v.object({
-        hex: v.string(),
-        name: v.optional(v.string()),
-      }),
-    ),
-    fonts: v.array(
-      v.object({
-        family: v.string(),
-        usage: v.string(),
-      }),
-    ),
+    name: v.string(),
+    userId: v.id("users"),
+    colors: v.optional(v.any()), // just to make sure it properly stores without Error !
+    fonts: v.optional(v.any()),
     createdAt: v.number(),
-  }),
-
-  exports: defineTable({
-    projectId: v.id("projects"),
-    githubRepo: v.optional(v.string()),
-    vercelUrl: v.optional(v.string()),
-    vercelDeploymentId: v.optional(v.string()),
-    supabaseUrl: v.optional(v.string()),
-    createdAt: v.number(),
-  }),
+    updatedAt: v.number(),
+  }).index("by_user", ["userId"]),
 });

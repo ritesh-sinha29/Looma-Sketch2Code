@@ -17,7 +17,7 @@ export function CollaboratorAvatars({ inviteLink }: { inviteLink?: string }) {
   const activeUsers = allUsers.filter((u) => u.info);
 
   return (
-    <div className="absolute top-2 scale-75 left-1/2 flex items-center   overflow-hidden z-50 group bg-accent min-w-[200px] px-3 py-1 rounded-full ">
+    <div className="flex items-center overflow-hidden z-50 group bg-accent min-w-[200px] px-3 py-1 rounded-full border border-border/50">
       {inviteLink && (
         <Button
           size="icon-sm"

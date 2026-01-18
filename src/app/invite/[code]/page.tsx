@@ -10,7 +10,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useConvexAuth } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
+import { api } from "@convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Loader2, LucideX, LucideInfo, LucideLogIn, LucideCheck } from "lucide-react";

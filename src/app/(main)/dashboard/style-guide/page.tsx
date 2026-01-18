@@ -36,7 +36,7 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { api } from "../../../../../convex/_generated/api";
+import { api } from "@convex/_generated/api";
 import { Separator } from "@/components/ui/separator";
 
 const ColorCard = ({

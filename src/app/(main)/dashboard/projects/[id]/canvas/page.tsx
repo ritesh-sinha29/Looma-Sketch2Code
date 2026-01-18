@@ -10,7 +10,7 @@ import Canvas from "./Canvas";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 // import { api } from "../../../../../../../convex/_generated/api";
-import { Id } from "../../../../../../../convex/_generated/dataModel";
+import { Id } from "@convex/_generated/dataModel";
 
 const ProjectCanvas = () => {
   const { user, isLoaded } = useUser();

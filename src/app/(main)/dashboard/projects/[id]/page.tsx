@@ -1,8 +1,8 @@
 "use client";
 import { useParams } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "@convex/_generated/api";
-import { Id } from "@convex/_generated/dataModel";
+import { api } from "../../../../../../convex/_generated/api";
+import { Id } from "../../../../../../convex/_generated/dataModel";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,12 +18,14 @@ import {
   Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import { InviteDialog } from "@/modules/projects/inviteDialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatDistanceToNow } from "date-fns";
-
+import Image from "next/image";
 
 const ProjectPage = () => {
   const params = useParams<{ id: Id<"projects"> }>();
@@ -43,6 +45,7 @@ const ProjectPage = () => {
     currentUser && membersData && currentUser._id === membersData.owner._id;
 
   const [inviteOpen, setInviteOpen] = useState(false);
+
 
   if (project === undefined) {
     return (
@@ -65,7 +68,7 @@ const ProjectPage = () => {
               "flex items-center gap-2 py-1 px-3 text-xs border rounded-full",
               project?.isPublic
                 ? "border-green-500 text-green-600 bg-green-50"
-                : "border-orange-500 text-orange-600 bg-orange-50"
+                : "border-orange-500 text-orange-600 bg-orange-50",
             )}
           >
             {project?.isPublic ? (
@@ -99,15 +102,25 @@ const ProjectPage = () => {
       <div className="my-5 w-[1080px] h-[260px] bg-gray-200 rounded"></div>
 
       <div className="flex w-full items-center justify-center gap-20 mt-5">
+      
         <Link href={`/dashboard/projects/${params.id}/canvas`}>
-          <Button className="text-sm px-8!  cursor-pointer" size="sm">
+        
+          <Button
+            className="text-sm px-8!  cursor-pointer"
+            size="sm"
+            variant="outline"
+          >
             Go to canvas <DraftingCompass className="w-4 h-4 ml-1" />
           </Button>
         </Link>
 
-        <Link href={`/dashboard/projects/${params.id}/generate`}>
-          <Button className="text-sm px-5!  cursor-pointer" size="sm">
-            View generated code <LucideGlobe className="w-4 h-4 ml-1" />
+        <Link href={`/dashboard/projects/${params.id}/codespace`}>
+          <Button
+            className="text-sm px-5!  cursor-pointer"
+            size="sm"
+            variant="outline"
+          >
+            Go to codespace <LucideGlobe className="w-4 h-4 ml-1" />
           </Button>
         </Link>
       </div>
@@ -211,20 +224,35 @@ const ProjectPage = () => {
         {/* RIGHT SIDE */}
         <Separator orientation="vertical" className="h-100!" />
         <div className="w-[30%] h-full flex flex-col  space-y-3">
-          <h3 className="text-center">Project Details <LucideInfo className="w-4 h-4 ml-2 inline" /></h3>
+          <h3 className="text-center">
+            Project Details <LucideInfo className="w-4 h-4 ml-2 inline" />
+          </h3>
           <p>
             Description:{" "}
             {project?.projectDescription ?? "No description added yet"}
           </p>
           <div className="flex flex-wrap items-center gap-2">
             {project?.projectTags?.map((tag) => (
-              <p key={tag} className="bg-muted py-1 px-3 rounded-full text-sm text-muted-foreground">
+              <p
+                key={tag}
+                className="bg-muted py-1 px-3 rounded-full text-sm text-muted-foreground"
+              >
                 {tag}
               </p>
             ))}
           </div>
-          <p>Created On: <span className="text-muted-foreground text-sm">{formatDistanceToNow(project?.createdAt!)}</span></p>
-          <p>Updated On: <span className="text-muted-foreground text-sm">{formatDistanceToNow(project?.updatedAt!)}</span></p>
+          <p>
+            Created On:{" "}
+            <span className="text-muted-foreground text-sm">
+              {formatDistanceToNow(project?.createdAt!)}
+            </span>
+          </p>
+          <p>
+            Updated On:{" "}
+            <span className="text-muted-foreground text-sm">
+              {formatDistanceToNow(project?.updatedAt!)}
+            </span>
+          </p>
         </div>
       </div>
 

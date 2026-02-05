@@ -18,9 +18,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
-import { Doc } from "@convex/_generated/dataModel";
+import { Doc } from "../../../convex/_generated/dataModel";
 import { useQuery } from "convex/react";
-import { api } from "@convex/_generated/api";
+import { api } from "../../../convex/_generated/api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -35,6 +35,7 @@ import {
   LucideSettings,
   Plus,
   SparklesIcon,
+  Sun,
   User,
   Users,
 } from "lucide-react";
@@ -49,6 +50,10 @@ export const AppSidebar = () => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   const user: Doc<"users"> | undefined | null = useQuery(
     api.users.getCurrentUser
@@ -68,7 +73,7 @@ export const AppSidebar = () => {
   };
 
   return (
-    <Sidebar collapsible="icon" className="cursor-move">
+    <Sidebar collapsible="icon" className="">
       <SidebarHeader className="border-b ">
         <div className="flex items-center justify-between px-3 py-3">
           <Image
@@ -272,7 +277,7 @@ export const AppSidebar = () => {
             </TabsList>
 
             {/* FIXED HEIGHT + SCROLL */}
-            <div className="mt-2 p-1 h-[156px] overflow-y-auto rounded-md border bg-sidebar-accent/30">
+            <div className="mt-2 mb-2 p-1 h-[156px] overflow-y-auto rounded-md border bg-sidebar-accent/30">
               {/* MY CREATIONS */}
               <TabsContent value="my" className="m-0 p-2">
                 {projects && projects.length === 0 ? (
@@ -372,9 +377,17 @@ export const AppSidebar = () => {
           </Link>
         </SidebarMenuButton>
 
-        {/* <SignOutButton redirectUrl="/auth">
-          <Button variant="outline">Sign Out</Button>
-        </SignOutButton> */}
+      {/* THEME BUTTON */}
+       <SidebarMenuButton
+          asChild
+          className="group relative overflow-hidden my-2"
+        >
+          <Button variant="outline" onClick={toggleTheme}>
+            <Sun className="h-5 w-5" />
+            <span className="text-base">Theme</span>
+          </Button>
+        </SidebarMenuButton>
+
       </SidebarContent>
 
       {/* Footer */}

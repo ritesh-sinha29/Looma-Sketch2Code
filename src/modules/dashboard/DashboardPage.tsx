@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "@convex/_generated/api";
-import { Doc } from "@convex/_generated/dataModel";
+import { api } from "../../../convex/_generated/api";
+import { Doc } from "../../../convex/_generated/dataModel";
 import {
   Check,
   ChevronsUpDown,
@@ -147,7 +147,7 @@ const DashboardPage = () => {
           {/* Create New Project Dialog */}
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
-              <Card className="h-[180px] w-full shrink-0 flex items-center justify-center border-2 border-dashed border-muted-foreground/40 hover:border-primary transition cursor-pointer hover:bg-muted/10">
+              <Card className="h-[180px] w-[220px] shrink-0 flex items-center justify-center border-2 border-dashed border-muted-foreground/40 hover:border-primary transition cursor-pointer hover:bg-muted/10">
                 <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <LucidePlus className="h-4 w-4" /> Create New Project
                 </span>
@@ -266,7 +266,7 @@ const DashboardPage = () => {
             Array.from({ length: 3 }).map((_, index) => (
               <Card
                 key={index}
-                className="h-[180px] w-full shrink-0 p-3 overflow-hidden"
+                className="h-[180px] w-[240px] shrink-0 p-3 overflow-hidden"
               >
                 <CardHeader>
                   <Skeleton className="h-6 w-3/4 rounded-md" />
@@ -290,7 +290,7 @@ const DashboardPage = () => {
                   href={`/dashboard/projects/${project._id}`}
                 >
                   <Card
-                    className={`h-[180px] w-full shrink-0 bg-linear-to-br ${gradient} 
+                    className={`h-[180px] w-[250px] shrink-0 bg-linear-to-br ${gradient} 
             hover:scale-[1.02] transition-transform cursor-pointer p-2! overflow-hidden relative`}
                   >
                     <CardHeader>
@@ -365,7 +365,7 @@ const DashboardPage = () => {
               <Spinner className="h-8 w-8 text-muted-foreground" />
             </div>
           ) : savedStyles.length === 0 ? (
-            <div className="text-center py-10 bg-muted/30 rounded-xl border border-dashed">
+            <div className="h-[200px] max-w-[260px] flex items-center justify-center bg-muted/30 rounded-lg border border-dashed border-black/30 hover:border-black/50 transition-colors cursor-pointer hover:bg-black/5">
               <p className="text-muted-foreground">
                 No style guides saved yet.
               </p>

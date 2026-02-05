@@ -4,7 +4,7 @@ import { useStoreUser } from "@/hooks/user-store";
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { api } from "@convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 import {
   SidebarInset,
   SidebarProvider,
@@ -14,6 +14,7 @@ import { AppSidebar } from "@/modules/dashboard/appsidebar";
 import { DashboardBreadcrumbs } from "@/modules/dashboard/BreadCrumbs";
 import { RedirectToSignIn, UserButton } from "@clerk/clerk-react";
 import { Separator } from "@/components/ui/separator";
+import ProjectSearchBar from "@/modules/dashboard/search-bar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { isLoading: isStoreLoading } = useStoreUser();
@@ -45,6 +46,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <Separator orientation="vertical" className="mx-0 h-12! bg-gray-400!" />
                   <DashboardBreadcrumbs />
                 </div>
+                <ProjectSearchBar/>
                 <div>
                   <UserButton/>
                 </div>

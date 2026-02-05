@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { useQuery } from "convex/react";
-import { api } from "@convex/_generated/api";
-import { Doc } from "@convex/_generated/dataModel";
+import { api } from "../../../../../convex/_generated/api";
+import { Doc } from "../../../../../convex/_generated/dataModel";
 import { formatDistanceToNow } from "date-fns";
 import {
   LucideLayoutGrid,
@@ -195,8 +195,8 @@ const AllProjects = () => {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed text-center">
-            <div className="bg-background p-4 rounded-full shadow-sm mb-4">
-              <LucideUsers className="h-8 w-8 text-muted-foreground" />
+            <div className="bg-background p-3 rounded-full shadow-sm mb-4">
+              <LucideUsers className="h-6 w-6 text-muted-foreground" />
             </div>
             <p className="text-muted-foreground font-medium">
               You haven't joined any other projects yet.

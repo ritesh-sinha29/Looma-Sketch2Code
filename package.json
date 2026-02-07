@@ -66,6 +66,7 @@
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.1",
     "react-resizable-panels": "^4.4.1",
+    "react-simple-typewriter": "^5.0.1",
     "recharts": "2.15.4",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",

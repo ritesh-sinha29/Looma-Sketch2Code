@@ -1,18 +1,26 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "convex/react";
-import { Code, LucideExternalLink, Sparkles } from "lucide-react";
-import { useParams } from "next/navigation";
+import { Code, LucideExternalLink, Sparkles, GitPullRequestArrow } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import React from "react";
 import { api } from "../../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
 import { Spinner } from "@/components/ui/spinner";
+import { CreateVersionDialog } from "@/modules/projects/diffing-system";
 
 const CodespacePage = () => {
   const param = useParams();
   const projectId = param.id as Id<"projects">;
   const allCodes = useQuery(api.projects.getCodespaces, { projectId });
+  const router = useRouter();
+
+  const handleViewCode = (code: string) => {
+    localStorage.setItem("generatedCode", code);
+    router.push(`/dashboard/projects/${projectId}/generate`);
+  };
+
   return (
     <div className="p-6">
       <div className="flex items-start justify-between ">
@@ -63,7 +71,12 @@ const CodespacePage = () => {
               </div>
 
               <div className="mt-4 pt-4 border-t border-border/50 flex items-center justify-between">
-                <Button variant="ghost" size="sm" className="text-xs">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-xs cursor-pointer"
+                  onClick={() => handleViewCode(code.code || "")}
+                >
                   View Full Code
                 </Button>
                 <div className="text-[10px] text-muted-foreground">

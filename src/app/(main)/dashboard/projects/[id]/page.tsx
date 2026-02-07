@@ -16,6 +16,8 @@ import {
   LucideInfo,
   LucideLock,
   Trash2,
+  GitPullRequest,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -99,7 +101,9 @@ const ProjectPage = () => {
       </div>
 
       {/* AWS PROJECT THUMBNAIL SETUP  1080 x 260 */}
-      <div className="my-5 w-[1080px] h-[260px] bg-gray-200 rounded"></div>
+      <div className="my-5 flex justify-center">
+        <div className="w-[1080px] h-[260px] bg-gray-200 rounded"></div>
+      </div>
 
       <div className="flex w-full items-center justify-center gap-20 mt-5">
       
@@ -114,6 +118,16 @@ const ProjectPage = () => {
           </Button>
         </Link>
 
+        <Link href={`/dashboard/projects/${params.id}/requests`}>
+          <Button
+            className="text-sm px-8!  cursor-pointer"
+            size="sm"
+            variant="outline"
+          >
+            Check requests <GitPullRequest className="w-4 h-4 ml-1" />
+          </Button>
+        </Link>
+         
         <Link href={`/dashboard/projects/${params.id}/codespace`}>
           <Button
             className="text-sm px-5!  cursor-pointer"
@@ -123,7 +137,19 @@ const ProjectPage = () => {
             Go to codespace <LucideGlobe className="w-4 h-4 ml-1" />
           </Button>
         </Link>
+
+        <Link href={`/dashboard/projects/${params.id}/group-chat`}>
+          <Button
+            className="text-sm px-5!  cursor-pointer"
+            size="sm"
+            variant="outline"
+          >
+            Group Chat <MessageSquare className="w-4 h-4 ml-1" />
+          </Button>
+        </Link>
       </div>
+
+        
 
       {/* PARENT CONATINER */}
       <div className="flex px-4 w-full mt-10 gap-6">

@@ -1,10 +1,14 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { Allotment } from "allotment";
 import "allotment/dist/style.css";
 import ChatSection from "@/modules/generate/ChatSection";
 import WebDesignPreview from "@/modules/generate/WebDesignPreview";
 import ElementSetting from "@/modules/generate/ElementSetting";
+import { useParams } from "next/navigation";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
 const MIN_AI_WIDTH = 250;
 const MAX_AI_WIDTH = 400;
@@ -17,6 +21,14 @@ const GeneratePage = () => {
   const [showTools, setShowTools] = useState(false);
   const [currentCode, setCurrentCode] = useState("");
   const [isReady, setIsReady] = useState(true);
+
+  useEffect(() => {
+    const savedCode = localStorage.getItem("generatedCode");
+    if (savedCode) {
+      setCurrentCode(savedCode);
+      localStorage.removeItem("generatedCode");
+    }
+  }, []);
 
   const GetCodeDetails = async () => {};
 
@@ -33,6 +45,13 @@ const GeneratePage = () => {
     null,
   );
 
+
+  const params = useParams();
+  const projectId = params.id as Id<"projects">;
+  
+  const membersData = useQuery(api.projects.getOwnerAndProjectMembers, { projectId });
+  const currentUser = useQuery(api.users.getCurrentUser);
+  const isOwner = currentUser && membersData && currentUser._id === membersData.owner._id;
 
   return (
     <div className="h-[calc(100vh-64px)] w-full border-t border-border">
@@ -59,6 +78,8 @@ const GeneratePage = () => {
               designCode={currentCode}
               selectedElement={selectedElement}
               setSelectedElement={setSelectedElement}
+              projectId={projectId}
+              isOwner={!!isOwner}
             />
           </div>
         </Allotment.Pane>

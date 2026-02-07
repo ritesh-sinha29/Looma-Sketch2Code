@@ -15,6 +15,7 @@ import {
   LucideTablet,
   LucideTabletSmartphone,
   ToolCase,
+  GitPullRequestArrow,
 } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
@@ -24,7 +25,13 @@ import CodeExporting from "./CodeExporting";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { LabelList } from "recharts";
 import { Label } from "@/components/ui/label";
+
 import { Input } from "@/components/ui/input";
+import { CreateVersionDialog } from "@/modules/projects/diffing-system";
+import { Id } from "@/convex/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
 
 interface WebDesignPreviewProps {
   onToggleTools: () => void;
@@ -32,6 +39,8 @@ interface WebDesignPreviewProps {
   designCode: string;
   selectedElement: HTMLElement | null;
   setSelectedElement: (element: HTMLElement | null) => void;
+  projectId: Id<"projects">;
+  isOwner: boolean;
 }
 
 const getShell = (code: string, isDesign: boolean = false) => `
@@ -73,6 +82,8 @@ const WebDesignPreview = ({
   designCode,
   selectedElement,
   setSelectedElement,
+  projectId,
+  isOwner,
 }: WebDesignPreviewProps) => {
   const [displayCode, setDisplayCode] = useState("");
   const [selectedScreen, setSelectedScreen] = useState<
@@ -80,7 +91,39 @@ const WebDesignPreview = ({
   >("web");
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<"preview" | "design">("preview");
+  
+  // Track the active component name for this session to pre-fill dialog
+  const [activeComponentName, setActiveComponentName] = useState("");
+  const [activeDescription, setActiveDescription] = useState("");
+
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Codespace saving state
+  const [codespaceName, setCodespaceName] = useState("");
+  const [codespaceDescription, setCodespaceDescription] = useState("");
+  const saveCodespace = useMutation(api.projects.saveCodespace);
+
+  const handleSaveCodespace = async () => {
+    if (!codespaceName.trim()) {
+      toast.error("Please enter a name for the codespace");
+      return;
+    }
+    
+    try {
+      await saveCodespace({
+        projectId,
+        code: designCode,
+        name: codespaceName,
+        description: codespaceDescription,
+      });
+      toast.success("Saved to codespace!");
+      setCodespaceName("");
+      setCodespaceDescription("");
+    } catch (error) {
+       toast.error("Failed to save codespace");
+       console.error(error);
+    }
+  };
 
   // RENDERING CODE ON IFRAME-----------------------
   useEffect(() => {
@@ -239,10 +282,23 @@ const WebDesignPreview = ({
             <h1 className="text-sm font-medium">Save the code to your project <LucideCode2 className="inline h-4 w-4 ml-1 -mt-0.5"/></h1>
             <div className="flex-col flex space-y-1.5 mt-4 p-2 bg-primary-foreground border rounded">
               <Label className="text-xs">Codespace Name</Label>
-              <Input placeholder="eg: login v1" className="focus:outline-none border-border" />
+              <Input 
+                placeholder="eg: login v1" 
+                className="focus:outline-none border-border" 
+                value={codespaceName}
+                onChange={(e) => setCodespaceName(e.target.value)}
+              />
 
                <Label className="text-xs">Codespace Description</Label>
-              <Input placeholder="eg: Login page for v1" className="focus:outline-none border-border" />
+              <Input 
+                placeholder="eg: Login page for v1" 
+                className="focus:outline-none border-border" 
+                value={codespaceDescription}
+                onChange={(e) => setCodespaceDescription(e.target.value)}
+              />
+              <Button size="sm" className="w-full mt-2" onClick={handleSaveCodespace}>
+                Save Code
+              </Button>
             </div>
           </div>
           </PopoverContent>
@@ -367,6 +423,28 @@ const WebDesignPreview = ({
           >
             Publish <LucideGlobe />
           </Button>
+          
+          <CreateVersionDialog 
+            projectId={projectId} 
+            isOwner={isOwner} 
+            initialCode={designCode}
+            initialComponentName={activeComponentName}
+            initialDescription={activeDescription}
+            onSuccess={(code, name, description) => {
+              // Remember the name and description for next time
+              setActiveComponentName(name);
+              setActiveDescription(description);
+            }}
+          >
+            <Button
+              variant="default"
+              size="sm"
+              className="cursor-pointer bg-orange-500 text-white hover:bg-orange-600 border-orange-600"
+            >
+              {isOwner ? "Upload Changes": "Upload Changes"} <GitPullRequestArrow className="w-4 h-4 ml-2" />
+            </Button>
+          </CreateVersionDialog>
+
           <CodeExporting displayCode={designCode} />
         </div>
       </div>

@@ -104,7 +104,17 @@ const statusStyles = {
 const doneStyle = "";
 
 // Deadline urgency calculator
-const getDeadlineUrgency = (deadline: number) => {
+const getDeadlineUrgency = (deadline: number, status: string) => {
+  if (status === 'done') {
+    return { 
+      color: 'text-green-500', 
+      bgColor: 'bg-green-500/10',
+      Icon: CheckCircle2, 
+      animate: false,
+      label: 'Completed'
+    };
+  }
+
   const now = Date.now();
   const diff = deadline - now;
   const days = diff / (1000 * 60 * 60 * 24);
@@ -201,7 +211,7 @@ export function TaskCard({ task, isOwner, currentUserId }: TaskCardProps & { isO
 // ... inside component
 
   const PriorityIcon = priorityStyles[task.priority].icon;
-  const deadlineUrgency = task.deadline ? getDeadlineUrgency(task.deadline) : null;
+  const deadlineUrgency = task.deadline ? getDeadlineUrgency(task.deadline, task.status) : null;
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -267,7 +277,7 @@ export function TaskCard({ task, isOwner, currentUserId }: TaskCardProps & { isO
                           </Badge>
                         </motion.div>
 
-                        <span className={`text-sm font-medium line-clamp-1 leading-tight ${task.status === 'done' ? 'line-through text-muted-foreground' : ''}`}>
+                        <span className={`text-sm font-medium line-clamp-1 leading-tight text-foreground/80 ${task.status === 'done' ? 'line-through text-muted-foreground' : ''}`}>
                           {task.taskName}
                         </span>
                         
@@ -314,84 +324,84 @@ export function TaskCard({ task, isOwner, currentUserId }: TaskCardProps & { isO
       </DialogTrigger>
       
       <DialogContent className="sm:max-w-md">
-        <DialogHeader className="flex flex-row items-center justify-between">
-          <DialogTitle className="text-xl">{isEditing ? "Edit Task" : task.taskName}</DialogTitle>
+        <DialogHeader className="flex flex-row items-center justify-between gap-4 pt-6 pb-2 border-b border-border/30">
+          <DialogTitle className="text-lg font-bold tracking-tight truncate text-foreground/90">{isEditing ? "Edit Task" : task.taskName}</DialogTitle>
           {isOwner && !isEditing && (
-              <div className="flex gap-1">
-                  <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
-                      <LucideEdit className="h-4 w-4 mr-1" /> Edit
+              <div className="flex gap-1 shrink-0">
+                  <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="h-8 px-2 text-[11px] font-bold uppercase tracking-wide">
+                      <LucideEdit className="h-3.5 w-3.5 mr-1" /> Edit
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={handleDelete} className="text-red-500 hover:text-red-600 hover:bg-red-50">
-                      <Trash2 className="h-4 w-4 mr-1" /> Delete
+                  <Button variant="ghost" size="sm" onClick={handleDelete} className="h-8 px-2 text-red-500 hover:text-red-600 hover:bg-red-500/10 text-[11px] font-bold uppercase tracking-wide">
+                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
                   </Button>
               </div>
           )}
         </DialogHeader>
         
         {!isEditing ? (
-             <>
-                <div className="flex items-center gap-2 mt-2 flex-wrap">
-                    <motion.div
-                      variants={badgeVariants}
-                      initial="initial"
-                      animate="animate"
-                      whileHover="hover"
-                    >
-                      <Badge variant="outline" className={`capitalize ${priorityStyles[task.priority].badge} px-2 py-1 flex items-center gap-1.5`}>
-                          <PriorityIcon className="h-3.5 w-3.5" />
-                          {task.priority} Priority
-                      </Badge>
-                    </motion.div>
-                    {task.deadline && (
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-1 rounded-md">
-                        <CalendarIcon className="h-3 w-3" />
-                        <span>{format(task.deadline, "PPP")}</span>
+              <div className="mt-2 border border-border/40 rounded-xl bg-muted/10 p-4 space-y-4 shadow-inner">
+                  {/* Meta Grid: Priority & Deadline */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                        <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Priority</h4>
+                        <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border/30 bg-background/40 ${priorityStyles[task.priority].badge} w-full`}>
+                            <PriorityIcon className="h-3.5 w-3.5" />
+                            <span className="text-xs font-semibold capitalize">{task.priority}</span>
                         </div>
-                    )}
-                </div>
+                    </div>
 
-                <div className="space-y-6 py-4">
-                {/* Description */}
-                <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-muted-foreground">Description</h4>
-                    {task.description ? (
-                        <p className="text-sm leading-relaxed text-foreground/90 bg-muted/30 p-3 rounded-lg border border-border/50">
-                        {task.description}
-                        </p>
-                    ) : (
-                        <p className="text-sm text-muted-foreground italic">No description provided.</p>
-                    )}
-                </div>
+                    <div className="space-y-1">
+                        <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Deadline</h4>
+                        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border/30 bg-background/40 w-full">
+                            <CalendarIcon className="h-3.5 w-3.5 text-muted-foreground/60" />
+                            <span className="text-xs font-semibold">{task.deadline ? format(task.deadline, "MMM dd, yyyy") : "No deadline"}</span>
+                        </div>
+                    </div>
+                  </div>
 
-                {/* Assignee */}
-                <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-muted-foreground">Assignee</h4>
-                    {task.assignee ? (
-                        <div className="flex items-center gap-3 bg-muted/30 p-2 rounded-lg border border-border/50 w-fit pr-4">
-                            <Avatar>
-                                <AvatarImage src={task.assignee.imageUrl} />
-                                <AvatarFallback>{task.assignee.name?.[0]}</AvatarFallback>
-                            </Avatar>
-                            <div className="flex flex-col">
-                                <span className="text-sm font-medium">{task.assignee.name}</span>
-                                <span className="text-xs text-muted-foreground">Assigned Member</span>
+                  {/* Description Section */}
+                  <div className="space-y-1.5">
+                      <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Description</h4>
+                      {task.description ? (
+                          <p className="text-xs leading-relaxed text-foreground/80 bg-background/40 p-3 rounded-lg border border-border/30 min-h-[60px]">
+                          {task.description}
+                          </p>
+                      ) : (
+                          <p className="text-xs text-muted-foreground italic pl-1 bg-background/20 p-2 rounded-lg border border-dashed border-border/30">
+                            No description provided.
+                          </p>
+                      )}
+                  </div>
+
+                  {/* Footer Grid: Assignee & Assigned Deadline */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                        <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Assignee</h4>
+                        {task.assignee ? (
+                            <div className="flex items-center gap-2 bg-background/40 p-1.5 rounded-lg border border-border/30 w-full h-[42px]">
+                                <Avatar className="h-7 w-7 ring-1 ring-border/20">
+                                    <AvatarImage src={task.assignee.imageUrl} />
+                                    <AvatarFallback className="text-[10px]">{task.assignee.name?.[0]}</AvatarFallback>
+                                </Avatar>
+                                <div className="flex flex-col min-w-0">
+                                    <span className="text-xs font-semibold truncate leading-none text-foreground/90">{task.assignee.name}</span>
+                                    <span className="text-[9px] text-muted-foreground truncate pt-0.5">Member</span>
+                                </div>
                             </div>
-                        </div>
-                    ) : (
-                        <p className="text-sm text-muted-foreground italic">Unassigned</p>
-                    )}
-                </div>
+                        ) : (
+                            <p className="text-xs text-muted-foreground italic pl-1 flex items-center h-[42px] bg-background/20 rounded-lg border border-dashed border-border/30 px-2">Unassigned</p>
+                        )}
+                    </div>
 
-                {/* Assigned On */}
-                <div className="space-y-2">
-                     <h4 className="text-sm font-medium text-muted-foreground">Assigned On</h4>
-                     <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 p-2 rounded-lg border border-border/50 w-fit">
-                        <Clock className="h-4 w-4" />
-                        <span>{format(task._creationTime, "PPP")}</span>
-                     </div>
-                </div>
-                </div>
-             </>
+                    <div className="space-y-1">
+                        <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Assigned Deadline</h4>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground bg-background/40 p-2 h-[42px] rounded-lg border border-border/30 w-full pl-3">
+                            <Clock className="h-3.5 w-3.5 opacity-60" />
+                            <span className="text-[10px] font-medium">{format(task._creationTime, "MMM dd, yyyy")}</span>
+                        </div>
+                    </div>
+                  </div>
+              </div>
         ) : (
             <div className="space-y-4 py-4">
                 <div className="space-y-2">

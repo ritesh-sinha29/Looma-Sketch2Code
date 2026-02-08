@@ -6,6 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { Tool } from "ai";
@@ -75,12 +76,16 @@ export const AgentInstructions = memo(
   )
 );
 
-export type AgentToolsProps = ComponentProps<typeof Accordion>;
+export type AgentToolsProps = AccordionPrimitive.AccordionMultipleProps;
 
-export const AgentTools = memo(({ className, ...props }: AgentToolsProps) => (
+export const AgentTools = memo(({ className, type: _type, ...props }: AgentToolsProps) => (
   <div className={cn("space-y-2", className)}>
     <span className="font-medium text-muted-foreground text-sm">Tools</span>
-    <Accordion className="rounded-md border" type="multiple" {...props} />
+    <Accordion
+      className="rounded-md border"
+      type="multiple"
+      {...props}
+    />
   </div>
 ));
 

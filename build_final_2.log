@@ -1,0 +1,26 @@
+
+> looma@0.1.0 build C:\Users\Ritesh Sinha\OneDrive\Desktop\Looma-Sketch2Code
+> next build
+
+▲ Next.js 16.1.1 (Turbopack)
+- Environments: .env.local
+- Experiments (use with caution):
+  · serverActions
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 11.7s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/ai-elements/audio-player.tsx:21:8
+Type error: Cannot find module 'media-chrome/react' or its corresponding type declarations.
+
+  19 |   MediaTimeRange,
+  20 |   MediaVolumeRange,
+> 21 | } from "media-chrome/react";
+     |        ^
+  22 | import type { ComponentProps, CSSProperties } from "react";
+  23 |
+  24 | export type AudioPlayerProps = Omit<
+Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.

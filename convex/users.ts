@@ -111,6 +111,18 @@ export const getCurrentUser = query({
 });
 
 // ==============================
+// GET USER BY ID (Internal - No Auth)
+// ===============================
+export const getUserById = internalQuery({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.userId);
+  },
+});
+
+// ==============================
 // UPDATE USER THEME
 // ===============================
 export const updateUserTheme = mutation({

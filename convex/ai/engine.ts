@@ -1,8 +1,7 @@
-// AI Engine - Core AI logic and Gemini API integration
-// Helper functions for AI processing
+
 
 import { ActionCtx, MutationCtx } from "../_generated/server";
-import { api, internal } from "../_generated/api";
+import { internal } from "../_generated/api";
 import { Id } from "../_generated/dataModel";
 import { AI_SYSTEM_PROMPT } from "./systemPrompt";
 
@@ -18,6 +17,10 @@ interface MessageContext {
     author: string;
     text: string;
   };
+  teamMembers: Array<{
+    name: string;
+    userId: Id<"users">;
+  }>;
 }
 
 interface EngagementAnalysis {
@@ -53,6 +56,38 @@ export async function buildContext(
     throw new Error("Current message not found");
   }
 
+  // Fetch project to get team members (using internal query - no auth required)
+  const project = await ctx.runQuery(internal.projects.internalGetProjectById, {
+    projectId,
+  });
+
+  if (!project) {
+    throw new Error("Project not found");
+  }
+
+  // Get owner and members
+  const teamMembers: Array<{ name: string; userId: Id<"users"> }> = [];
+  
+  // Add owner
+  const owner = await ctx.runQuery(internal.users.getUserById, {
+    userId: project.ownerId,
+  });
+  if (owner) {
+    teamMembers.push({ name: owner.name, userId: owner._id });
+  }
+
+  // Add project members
+  if (project.projectMembers) {
+    for (const member of project.projectMembers) {
+      const memberUser = await ctx.runQuery(internal.users.getUserById, {
+        userId: member.userId,
+      });
+      if (memberUser && !teamMembers.some(tm => tm.userId === memberUser._id)) {
+        teamMembers.push({ name: memberUser.name, userId: memberUser._id });
+      }
+    }
+  }
+
   // Format for AI consumption
   return {
     messageIds: messages.map((m) => m._id),
@@ -66,6 +101,7 @@ export async function buildContext(
       author: currentMessage.user.name,
       text: currentMessage.text,
     },
+    teamMembers,
   };
 }
 
@@ -244,7 +280,16 @@ export async function generateAIResponse(
     .map((m) => `${m.author}: ${m.text}`)
     .join("\n\n");
 
+  // Build team members list
+  const teamMembersList = context.teamMembers
+    .map((tm) => tm.name)
+    .join(", ");
+
   const prompt = `${AI_SYSTEM_PROMPT}
+
+## Team Members:
+
+You can mention these team members using @username format: ${teamMembersList}
 
 ## Recent Conversation:
 
@@ -252,7 +297,7 @@ ${conversationHistory}
 
 ## Your Response:
 
-Respond naturally to the most recent message. Keep it concise and helpful.`;
+Respond naturally to the most recent message. Keep it concise and helpful. You can use @mentions when appropriate.`;
 
   try {
     const response = await fetch(

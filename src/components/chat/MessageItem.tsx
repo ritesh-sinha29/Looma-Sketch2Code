@@ -67,6 +67,41 @@ export function MessageItem({ message }: MessageItemProps) {
   const variants = shouldReduceMotion ? messageVariantsReduced : messageVariants;
   const isAIMessage = message.isAI || false;
 
+  // Helper function to parse and render mentions
+  const renderMessageWithMentions = (text: string) => {
+    // Regex to match @username (letters, numbers, spaces, hyphens, underscores)
+    const mentionRegex = /@([\w\s-]+?)(?=\s|$|[.,!?])/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = mentionRegex.exec(text)) !== null) {
+      // Add text before mention
+      if (match.index > lastIndex) {
+        parts.push(text.substring(lastIndex, match.index));
+      }
+
+      // Add mention with styling
+      parts.push(
+        <span
+          key={match.index}
+          className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-1 rounded font-medium"
+        >
+          @{match[1]}
+        </span>
+      );
+
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex));
+    }
+
+    return parts.length > 0 ? parts : text;
+  };
+
   return (
     <motion.div
       variants={variants}
@@ -104,9 +139,9 @@ export function MessageItem({ message }: MessageItemProps) {
           )}
         </div>
 
-        {/* Message text */}
+        {/* Message text with mention highlighting */}
         <p className="text-sm whitespace-pre-wrap break-words">
-          {message.text}
+          {renderMessageWithMentions(message.text)}
         </p>
 
         {/* Reactions */}

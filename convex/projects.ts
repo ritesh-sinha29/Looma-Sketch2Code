@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
 
 // =======================
@@ -96,6 +96,18 @@ export const getProjectById = query({
 });
 
 // ============================
+// INTERNAL: GET PROJECT BY ID (No Auth - for AI use)
+// ============================
+export const internalGetProjectById = internalQuery({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    return ctx.db.get(args.projectId);
+  },
+});
+
+// ============================
 // GET PROJECT BY INVITE CODE
 // ============================
 export const getProjectByInviteCode = query({
@@ -121,13 +133,10 @@ export const joinProject = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    console.log("Trying to get identity to join project!");
 
     if (!identity) {
       throw new Error("Unauthenticated");
     }
-
-    console.log("Identity checked , now checking for user...");
 
     const user = await ctx.db
       .query("users")

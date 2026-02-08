@@ -260,7 +260,7 @@ export function TaskCard({ task, isOwner, currentUserId }: TaskCardProps & { isO
                         <motion.div
                           variants={badgeVariants}
                           initial="initial"
-                          animate={task.priority === 'critical' ? { scale: [1, 1.05, 1], transition: { repeat: Infinity, duration: 2 } } : "animate"}
+                          animate={task.priority === 'critical' ? { opacity: 1, scale: [1, 1.05, 1], transition: { repeat: Infinity, duration: 2 } } : "animate"}
                           whileHover="hover"
                           className="w-fit"
                         >
@@ -385,7 +385,9 @@ export function TaskCard({ task, isOwner, currentUserId }: TaskCardProps & { isO
                                 </Avatar>
                                 <div className="flex flex-col min-w-0">
                                     <span className="text-xs font-semibold truncate leading-none text-foreground/90">{task.assignee.name}</span>
-                                    <span className="text-[9px] text-muted-foreground truncate pt-0.5">Member</span>
+                                    <span className="text-[9px] text-muted-foreground truncate pt-0.5">
+                                      {projectMembers?.owner?._id === task.assigneeId ? "Owner" : "Member"}
+                                    </span>
                                 </div>
                             </div>
                         ) : (

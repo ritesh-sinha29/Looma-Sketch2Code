@@ -225,22 +225,5 @@ export const updateSettings = mutation({
   },
 });
 
-// Internal mutation to update rate limits
-export const updateRateLimits = internalMutation({
-  args: { projectId: v.id("projects") },
-  handler: async (ctx, args) => {
-    const config = await ctx.db
-      .query("ai_config")
-      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
-      .first();
 
-    if (!config) return;
-
-    await ctx.db.patch(config._id, {
-      lastResponseAt: Date.now(),
-      responsesToday: config.responsesToday + 1,
-      updatedAt: Date.now(),
-    });
-  },
-});
 

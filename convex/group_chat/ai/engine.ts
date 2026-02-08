@@ -4,6 +4,8 @@ import { ActionCtx, MutationCtx } from "../../_generated/server";
 import { internal } from "../../_generated/api";
 import { Id } from "../../_generated/dataModel";
 import { AI_SYSTEM_PROMPT } from "./systemPrompt";
+import { google } from "@ai-sdk/google";
+import { generateText } from "ai";
 
 interface MessageContext {
   messageIds: Id<"messages">[];
@@ -185,23 +187,6 @@ export function analyzeEngagement(
     if (reason === "none") reason = "discussion";
   }
 
-  // Check for greetings (positive signal)
-  const greetingKeywords = [
-    "hello",
-    "hi ",
-    "hi!",
-    "hey",
-    "hii",
-    "hiii",
-    "hellooo",
-    "hey there",
-  ];
-
-  if (greetingKeywords.some((kw) => msg.includes(kw))) {
-    score += 0.6;
-    if (reason === "none") reason = "greeting";
-  }
-
   // Negative signals (reduce score) - social chatter
   const socialKeywords = [
     "lol",
@@ -259,7 +244,7 @@ export function analyzeEngagement(
   };
 }
 
-// Generate AI response via Gemini API
+// Generate AI response via Vercel AI SDK
 export async function generateAIResponse(
   context: MessageContext,
   analysis: EngagementAnalysis
@@ -274,7 +259,7 @@ export async function generateAIResponse(
     return null;
   }
 
-  // Build conversation history for Gemini
+  // Build conversation history for the prompt
   const conversationHistory = context.messages
     .slice(-10) // Last 10 messages for context
     .map((m) => `${m.author}: ${m.text}`)
@@ -285,107 +270,35 @@ export async function generateAIResponse(
     .map((tm) => tm.name)
     .join(", ");
 
-  const prompt = `${AI_SYSTEM_PROMPT}
+  const prompt = `
+${AI_SYSTEM_PROMPT}
 
 ## Team Members:
-
 You can mention these team members using @username format: ${teamMembersList}
 
 ## Recent Conversation:
-
 ${conversationHistory}
 
 ## Your Response:
-
 Respond naturally to the most recent message. Keep it concise and helpful. You can use @mentions when appropriate.`;
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: prompt,
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 1024,
-          },
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Gemini API error:", errorText);
-      return null;
-    }
-
-    const data = await response.json();
-
-    if (!data.candidates || data.candidates.length === 0) {
-      console.error("No candidates in Gemini response");
-      return null;
-    }
-
-    const content = data.candidates[0].content.parts[0].text;
-
-    // Estimate token usage (Gemini doesn't provide exact counts in response)
-    const promptTokens = Math.ceil(prompt.length / 4);
-    const completionTokens = Math.ceil(content.length / 4);
+    const { text, usage } = await generateText({
+      model: google("gemini-2.5-flash"),
+      prompt: prompt,
+    });
 
     return {
-      content,
+      content: text,
       usage: {
-        promptTokens,
-        completionTokens,
+        promptTokens: usage.inputTokens ?? 0,
+        completionTokens: usage.outputTokens ?? 0,
       },
     };
   } catch (error) {
     console.error("AI generation failed:", error);
     return null;
   }
-}
-
-// Rate limiting (DISABLED - unlimited responses)
-export function checkRateLimit(config: AIConfig): boolean {
-  // Rate limiting disabled - AI can always respond
-  return true;
-  
-  /* Original rate limiting logic (commented out):
-  const now = Date.now();
-  const fiveMinutesAgo = now - 5 * 60 * 1000;
-
-  // Don't respond if AI responded in last 5 minutes
-  if (config.lastResponseAt && config.lastResponseAt > fiveMinutesAgo) {
-    return false;
-  }
-
-  // Daily limit based on frequency setting
-  const dailyLimits = {
-    conservative: 5,
-    moderate: 15,
-    active: 30,
-  };
-
-  const maxDaily = dailyLimits[config.responseFrequency];
-
-  if (config.responsesToday >= maxDaily) {
-    return false;
-  }
-
-  return true;
-  */
 }
 
 // Get or create AI system user

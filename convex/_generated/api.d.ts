@@ -10,7 +10,6 @@
 
 import type * as diffing_system_versions from "../diffing_system/versions.js";
 import type * as generatedCode from "../generatedCode.js";
-import type * as group_chat_ai_cleanup from "../group_chat/ai/cleanup.js";
 import type * as group_chat_ai_config from "../group_chat/ai/config.js";
 import type * as group_chat_ai_engine from "../group_chat/ai/engine.js";
 import type * as group_chat_ai_monitor from "../group_chat/ai/monitor.js";
@@ -35,7 +34,6 @@ import type {
 declare const fullApi: ApiFromModules<{
   "diffing_system/versions": typeof diffing_system_versions;
   generatedCode: typeof generatedCode;
-  "group_chat/ai/cleanup": typeof group_chat_ai_cleanup;
   "group_chat/ai/config": typeof group_chat_ai_config;
   "group_chat/ai/engine": typeof group_chat_ai_engine;
   "group_chat/ai/monitor": typeof group_chat_ai_monitor;

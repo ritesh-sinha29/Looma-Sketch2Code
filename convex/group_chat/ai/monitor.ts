@@ -1,5 +1,4 @@
-// AI Monitor - Main AI processing pipeline
-// Triggered after each new message
+
 
 import { v } from "convex/values";
 import { action, internalMutation } from "../../_generated/server";
@@ -8,7 +7,6 @@ import {
   buildContext,
   analyzeEngagement,
   generateAIResponse,
-  checkRateLimit,
   getOrCreateAIUser,
 } from "./engine";
 import { Id } from "../../_generated/dataModel";
@@ -31,12 +29,6 @@ export const processMessage = action({
         return;
       }
 
-      // 2. Check rate limits
-      const canRespond = checkRateLimit(config);
-      if (!canRespond) {
-        console.log("Rate limit exceeded");
-        return;
-      }
 
       // 3. Build message context (last 30 messages)
       const context = await buildContext(ctx, args.projectId, args.messageId);
@@ -76,10 +68,6 @@ export const processMessage = action({
         },
       });
 
-      // 7. Update rate limit counters
-      await ctx.runMutation(internal.group_chat.ai.config.updateRateLimits, {
-        projectId: args.projectId,
-      });
 
       console.log("AI response sent successfully");
     } catch (error) {

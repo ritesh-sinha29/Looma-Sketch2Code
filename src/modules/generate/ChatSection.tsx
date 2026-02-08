@@ -519,8 +519,6 @@ const ChatSection = ({ onCodeChange, onStatusChange }: Props) => {
           <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-lg border border-blue-200 dark:border-blue-800 animate-in fade-in duration-300">
             <div className="flex items-start gap-3">
               <div className="relative">
-                {/* <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
-                <div className="absolute inset-0 w-5 h-5 bg-blue-400 rounded-full animate-ping opacity-20" /> */}
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">

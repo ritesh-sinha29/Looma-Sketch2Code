@@ -1,6 +1,6 @@
 
 
-import { internalMutation } from "../_generated/server";
+import { internalMutation } from "../../_generated/server";
 
 // Reset daily counters at midnight (add to convex/crons.ts)
 export const resetDailyCounters = internalMutation({

@@ -8,7 +8,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { Send } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
-import { EmojiPicker } from "@/components/chat/EmojiPicker";
+import { EmojiPicker } from "@/components/group_chat/EmojiPicker";
 import { motion, useReducedMotion } from "framer-motion";
 import { sendButtonVariants } from "@/lib/animations";
 
@@ -22,8 +22,8 @@ export function MessageComposer({ projectId }: MessageComposerProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
-  const sendMessage = useMutation(api.messages.sendMessage);
-  const setTyping = useMutation(api.presence.setTyping);
+  const sendMessage = useMutation(api.group_chat.messages.sendMessage);
+  const setTyping = useMutation(api.group_chat.presence.setTyping);
 
   // Auto-resize textarea
   useEffect(() => {

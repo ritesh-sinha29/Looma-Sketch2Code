@@ -18,6 +18,7 @@ import {
   Trash2,
   GitPullRequest,
   MessageSquare,
+  ListTodo,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -105,46 +106,56 @@ const ProjectPage = () => {
         <div className="w-[1080px] h-[260px] bg-gray-200 rounded"></div>
       </div>
 
-      <div className="flex w-full items-center justify-center gap-20 mt-5">
+      <div className="flex w-full items-center justify-center gap-4 mt-5">
       
         <Link href={`/dashboard/projects/${params.id}/canvas`}>
         
           <Button
-            className="text-sm px-8!  cursor-pointer"
+            className="text-sm px-6 cursor-pointer min-w-[160px]"
             size="sm"
             variant="outline"
           >
-            Go to canvas <DraftingCompass className="w-4 h-4 ml-1" />
+            Go to canvas <DraftingCompass className="w-4 h-4 ml-2" />
           </Button>
         </Link>
 
         <Link href={`/dashboard/projects/${params.id}/requests`}>
           <Button
-            className="text-sm px-8!  cursor-pointer"
+            className="text-sm px-6 cursor-pointer min-w-[160px]"
             size="sm"
             variant="outline"
           >
-            Check requests <GitPullRequest className="w-4 h-4 ml-1" />
+            Check requests <GitPullRequest className="w-4 h-4 ml-2" />
           </Button>
         </Link>
          
         <Link href={`/dashboard/projects/${params.id}/codespace`}>
           <Button
-            className="text-sm px-5!  cursor-pointer"
+            className="text-sm px-6 cursor-pointer min-w-[160px]"
             size="sm"
             variant="outline"
           >
-            Go to codespace <LucideGlobe className="w-4 h-4 ml-1" />
+            Go to codespace <LucideGlobe className="w-4 h-4 ml-2" />
           </Button>
         </Link>
 
         <Link href={`/dashboard/projects/${params.id}/group-chat`}>
           <Button
-            className="text-sm px-5!  cursor-pointer"
+            className="text-sm px-6 cursor-pointer min-w-[160px]"
             size="sm"
             variant="outline"
           >
-            Group Chat <MessageSquare className="w-4 h-4 ml-1" />
+            Group Chat <MessageSquare className="w-4 h-4 ml-2" />
+          </Button>
+        </Link>
+
+        <Link href={`/dashboard/projects/${params.id}/tasks`}>
+          <Button
+            className="text-sm px-6 cursor-pointer min-w-[160px]"
+            size="sm"
+            variant="outline"
+          >
+            Tasks <ListTodo className="w-4 h-4 ml-2" />
           </Button>
         </Link>
       </div>

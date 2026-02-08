@@ -1,7 +1,7 @@
 import { v } from "convex/values";
-import { mutation, query, internalQuery } from "./_generated/server";
-import { Doc, Id } from "./_generated/dataModel";
-import { internal } from "./_generated/api";
+import { mutation, query, internalQuery } from "../_generated/server";
+import { Doc, Id } from "../_generated/dataModel";
+import { internal } from "../_generated/api";
 
 // SERVER-SIDE QUERY: Get messages for a project with user data enrichment
 export const getMessages = query({
@@ -206,7 +206,7 @@ export const sendMessage = mutation({
     });
 
     // Trigger AI processing asynchronously (non-blocking)
-    await ctx.scheduler.runAfter(0, internal.ai.triggers.triggerAIProcessing, {
+    await ctx.scheduler.runAfter(0, internal.group_chat.ai.triggers.triggerAIProcessing, {
       messageId: messageId,
       projectId: args.projectId,
     });

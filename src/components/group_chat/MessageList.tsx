@@ -3,7 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { MessageItem } from "@/components/chat/MessageItem";
+import { MessageItem } from "@/components/group_chat/MessageItem";
 import { Spinner } from "@/components/ui/spinner";
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -15,7 +15,7 @@ interface MessageListProps {
 
 export function MessageList({ projectId }: MessageListProps) {
   // SERVER-SIDE DATA: Fully enriched messages from Convex
-  const messages = useQuery(api.messages.getMessages, { projectId });
+  const messages = useQuery(api.group_chat.messages.getMessages, { projectId });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
 

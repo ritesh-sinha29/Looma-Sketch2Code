@@ -8,22 +8,23 @@
  * @module
  */
 
-import type * as ai_cleanup from "../ai/cleanup.js";
-import type * as ai_config from "../ai/config.js";
-import type * as ai_engine from "../ai/engine.js";
-import type * as ai_monitor from "../ai/monitor.js";
-import type * as ai_systemPrompt from "../ai/systemPrompt.js";
-import type * as ai_triggers from "../ai/triggers.js";
-import type * as crons from "../crons.js";
-import type * as emojiConstants from "../emojiConstants.js";
+import type * as diffing_system_versions from "../diffing_system/versions.js";
 import type * as generatedCode from "../generatedCode.js";
-import type * as messages from "../messages.js";
-import type * as presence from "../presence.js";
+import type * as group_chat_ai_cleanup from "../group_chat/ai/cleanup.js";
+import type * as group_chat_ai_config from "../group_chat/ai/config.js";
+import type * as group_chat_ai_engine from "../group_chat/ai/engine.js";
+import type * as group_chat_ai_monitor from "../group_chat/ai/monitor.js";
+import type * as group_chat_ai_systemPrompt from "../group_chat/ai/systemPrompt.js";
+import type * as group_chat_ai_triggers from "../group_chat/ai/triggers.js";
+import type * as group_chat_crons from "../group_chat/crons.js";
+import type * as group_chat_emojiConstants from "../group_chat/emojiConstants.js";
+import type * as group_chat_messages from "../group_chat/messages.js";
+import type * as group_chat_presence from "../group_chat/presence.js";
+import type * as group_chat_reactions from "../group_chat/reactions.js";
 import type * as projects from "../projects.js";
-import type * as reactions from "../reactions.js";
 import type * as styleGuides from "../styleGuides.js";
+import type * as tasks from "../tasks.js";
 import type * as users from "../users.js";
-import type * as versions from "../versions.js";
 
 import type {
   ApiFromModules,
@@ -32,22 +33,23 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  "ai/cleanup": typeof ai_cleanup;
-  "ai/config": typeof ai_config;
-  "ai/engine": typeof ai_engine;
-  "ai/monitor": typeof ai_monitor;
-  "ai/systemPrompt": typeof ai_systemPrompt;
-  "ai/triggers": typeof ai_triggers;
-  crons: typeof crons;
-  emojiConstants: typeof emojiConstants;
+  "diffing_system/versions": typeof diffing_system_versions;
   generatedCode: typeof generatedCode;
-  messages: typeof messages;
-  presence: typeof presence;
+  "group_chat/ai/cleanup": typeof group_chat_ai_cleanup;
+  "group_chat/ai/config": typeof group_chat_ai_config;
+  "group_chat/ai/engine": typeof group_chat_ai_engine;
+  "group_chat/ai/monitor": typeof group_chat_ai_monitor;
+  "group_chat/ai/systemPrompt": typeof group_chat_ai_systemPrompt;
+  "group_chat/ai/triggers": typeof group_chat_ai_triggers;
+  "group_chat/crons": typeof group_chat_crons;
+  "group_chat/emojiConstants": typeof group_chat_emojiConstants;
+  "group_chat/messages": typeof group_chat_messages;
+  "group_chat/presence": typeof group_chat_presence;
+  "group_chat/reactions": typeof group_chat_reactions;
   projects: typeof projects;
-  reactions: typeof reactions;
   styleGuides: typeof styleGuides;
+  tasks: typeof tasks;
   users: typeof users;
-  versions: typeof versions;
 }>;
 
 /**

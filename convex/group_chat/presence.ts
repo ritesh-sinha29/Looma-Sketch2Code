@@ -1,6 +1,6 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
-import { internalMutation } from "./_generated/server";
+import { mutation, query } from "../_generated/server";
+import { internalMutation } from "../_generated/server";
 
 // SERVER-SIDE QUERY: Get online users with presence calculation
 export const getOnlineUsers = query({

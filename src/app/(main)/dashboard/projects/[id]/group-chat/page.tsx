@@ -4,11 +4,11 @@ import { useParams } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { MessageList } from "@/components/chat/MessageList";
-import { MessageComposer } from "@/components/chat/MessageComposer";
-import { TypingIndicator } from "@/components/chat/TypingIndicator";
-import { OnlineUsersList } from "@/components/chat/OnlineUsersList";
-import { AIToggleButton } from "@/components/chat/AIToggleButton";
+import { MessageList } from "@/components/group_chat/MessageList";
+import { MessageComposer } from "@/components/group_chat/MessageComposer";
+import { TypingIndicator } from "@/components/group_chat/TypingIndicator";
+import { OnlineUsersList } from "@/components/group_chat/OnlineUsersList";
+import { AIToggleButton } from "@/components/group_chat/AIToggleButton";
 import { Spinner } from "@/components/ui/spinner";
 import { useEffect } from "react";
 import { MessageSquare } from "lucide-react";
@@ -18,7 +18,7 @@ export default function GroupChatPage() {
   const projectId = params.id;
 
   const project = useQuery(api.projects.getProjectById, { projectId });
-  const updatePresence = useMutation(api.presence.updatePresence);
+  const updatePresence = useMutation(api.group_chat.presence.updatePresence);
 
   // Presence heartbeat: Update every 30 seconds
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function GroupChatPage() {
   }
 
   return (
-    <div className="h-full w-full flex flex-col">
+    <div className="h-[calc(100vh-4rem)] w-full flex flex-col">
       {/* Header */}
       <div className="border-b px-3 py-2 bg-background">
         <div className="flex items-center justify-between gap-2">
@@ -70,9 +70,9 @@ export default function GroupChatPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden min-h-0">
         {/* Chat Area */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-h-0">
           {/* Messages */}
           <MessageList projectId={projectId} />
 

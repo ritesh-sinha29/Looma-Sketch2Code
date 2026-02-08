@@ -15,8 +15,8 @@ export function AIToggleButton({ projectId }: AIToggleButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Get current AI status
-  const config = useQuery(api.ai.config.getConfig, { projectId });
-  const toggleAI = useMutation(api.ai.config.toggleAI);
+  const config = useQuery(api.group_chat.ai.config.getConfig, { projectId });
+  const toggleAI = useMutation(api.group_chat.ai.config.toggleAI);
 
   const handleToggle = async () => {
     setIsLoading(true);

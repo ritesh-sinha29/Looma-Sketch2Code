@@ -202,4 +202,32 @@ ai_analytics: defineTable({
 })
   .index("by_project_date", ["projectId", "date"]),
 
+// TASK MANAGEMENT TABLE
+tasks: defineTable({
+  projectId: v.id("projects"),
+  taskName: v.string(),
+  description: v.optional(v.string()),
+  assigneeId: v.id("users"),
+  createdBy: v.id("users"),
+  priority: v.union(
+    v.literal("critical"),
+    v.literal("high"),
+    v.literal("medium"),
+    v.literal("low")
+  ),
+  status: v.union(
+    v.literal("todo"),
+    v.literal("in_progress"),
+    v.literal("review"),
+    v.literal("done")
+  ),
+  deadline: v.number(), // Unix timestamp
+  tags: v.optional(v.array(v.string())),
+  createdAt: v.number(),
+  updatedAt: v.number(),
+})
+  .index("by_project", ["projectId"])
+  .index("by_assignee", ["assigneeId"])
+  .index("by_project_deadline", ["projectId", "deadline"]),
+
 });

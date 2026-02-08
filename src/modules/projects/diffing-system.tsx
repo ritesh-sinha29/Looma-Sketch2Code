@@ -95,17 +95,17 @@ export function CreateVersionDialog({ projectId, isOwner, initialCode = "", chil
   const [description, setDescription] = useState(initialDescription);
   const [open, setOpen] = useState(false);
 
-  const createVersion = useMutation(api.versions.createVersion);
-  const createChangeRequest = useMutation(api.versions.createChangeRequest);
+  const createVersion = useMutation(api.diffing_system.versions.createVersion);
+  const createChangeRequest = useMutation(api.diffing_system.versions.createChangeRequest);
   
   // Need to fetch current versions to calculate diff if not owner
   const versions = useQuery(
-      api.versions.getComponentVersions,
+      api.diffing_system.versions.getComponentVersions,
       componentName ? { projectId, componentName } : "skip"
     ) as VersionWithDetails[] | undefined;
 
   // Fetch existing component names for autocomplete
-  const existingComponents = useQuery(api.versions.getAllComponents, { projectId });
+  const existingComponents = useQuery(api.diffing_system.versions.getAllComponents, { projectId });
 
   const handleSubmit = async () => {
     if (!componentName.trim() || !componentCode.trim()) {
@@ -247,27 +247,27 @@ export function VersionManager({ projectId, isOwner }: VersionManagerProps) {
 
   // Queries
   const versions = useQuery(
-    api.versions.getComponentVersions,
+    api.diffing_system.versions.getComponentVersions,
     { projectId, componentName: componentName || undefined }
   ) as VersionWithDetails[] | undefined;
 
   const rejectedRequests = useQuery(
-    api.versions.getRejectedChangeRequests,
+    api.diffing_system.versions.getRejectedChangeRequests,
     { projectId, componentName: componentName || undefined }
   ) as ChangeRequestWithDetails[] | undefined;
 
-  const pendingRequests = useQuery(api.versions.getPendingChangeRequests, { projectId }) as ChangeRequestWithDetails[] | undefined;
+  const pendingRequests = useQuery(api.diffing_system.versions.getPendingChangeRequests, { projectId }) as ChangeRequestWithDetails[] | undefined;
   
   const requestDetails = useQuery(
-    api.versions.getChangeRequestDetails,
+    api.diffing_system.versions.getChangeRequestDetails,
     selectedRequest ? { changeRequestId: selectedRequest } : "skip"
   ) as ChangeRequestWithDetails | null | undefined;
 
   // Mutations
-  const createVersion = useMutation(api.versions.createVersion);
-  const createChangeRequest = useMutation(api.versions.createChangeRequest);
-  const approveRequest = useMutation(api.versions.approveChangeRequest);
-  const rejectRequest = useMutation(api.versions.rejectChangeRequest);
+  const createVersion = useMutation(api.diffing_system.versions.createVersion);
+  const createChangeRequest = useMutation(api.diffing_system.versions.createChangeRequest);
+  const approveRequest = useMutation(api.diffing_system.versions.approveChangeRequest);
+  const rejectRequest = useMutation(api.diffing_system.versions.rejectChangeRequest);
 
  
   const handleCreateVersion = async () => {

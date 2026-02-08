@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query } from "../_generated/server";
 import { isValidEmojiId } from "./emojiConstants";
 
 // SERVER-SIDE QUERY: Get reactions for a message with aggregation

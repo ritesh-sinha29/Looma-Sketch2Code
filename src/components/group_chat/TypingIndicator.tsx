@@ -12,7 +12,7 @@ interface TypingIndicatorProps {
 
 export function TypingIndicator({ projectId }: TypingIndicatorProps) {
   // SERVER-SIDE: Typing users with auto-expiration
-  const typingUsers = useQuery(api.presence.getTypingUsers, { projectId });
+  const typingUsers = useQuery(api.group_chat.presence.getTypingUsers, { projectId });
   const shouldReduceMotion = useReducedMotion();
 
   if (!typingUsers || typingUsers.length === 0) {

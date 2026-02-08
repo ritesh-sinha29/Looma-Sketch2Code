@@ -8,7 +8,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { formatDistanceToNow } from "date-fns";
 import { MoreHorizontal, Pencil, Trash2, Bot } from "lucide-react";
 import { useState } from "react";
-import { EmojiPicker } from "@/components/chat/EmojiPicker";
+import { EmojiPicker } from "@/components/group_chat/EmojiPicker";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,8 +43,8 @@ interface MessageItemProps {
 
 export function MessageItem({ message }: MessageItemProps) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const toggleReaction = useMutation(api.reactions.toggleReaction);
-  const deleteMessage = useMutation(api.messages.deleteMessage);
+  const toggleReaction = useMutation(api.group_chat.reactions.toggleReaction);
+  const deleteMessage = useMutation(api.group_chat.messages.deleteMessage);
   const shouldReduceMotion = useReducedMotion();
 
   // Get current user to check permissions

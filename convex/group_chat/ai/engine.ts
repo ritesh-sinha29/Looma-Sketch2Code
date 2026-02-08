@@ -1,8 +1,8 @@
 
 
-import { ActionCtx, MutationCtx } from "../_generated/server";
-import { internal } from "../_generated/api";
-import { Id } from "../_generated/dataModel";
+import { ActionCtx, MutationCtx } from "../../_generated/server";
+import { internal } from "../../_generated/api";
+import { Id } from "../../_generated/dataModel";
 import { AI_SYSTEM_PROMPT } from "./systemPrompt";
 
 interface MessageContext {
@@ -44,7 +44,7 @@ export async function buildContext(
   currentMessageId: Id<"messages">
 ): Promise<MessageContext> {
   // Fetch last 30 messages from project using internal query (no auth required)
-  const messages = await ctx.runQuery(internal.messages.internalGetMessages, {
+  const messages = await ctx.runQuery(internal.group_chat.messages.internalGetMessages, {
     projectId,
     limit: 30,
   });

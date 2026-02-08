@@ -21,7 +21,7 @@ export function OnlineUsersList({ projectId }: OnlineUsersListProps) {
   const shouldReduceMotion = useReducedMotion();
 
   // SERVER-SIDE: Online users with presence calculation
-  const onlineUsers = useQuery(api.presence.getOnlineUsers, { projectId });
+  const onlineUsers = useQuery(api.group_chat.presence.getOnlineUsers, { projectId });
 
   if (isCollapsed) {
     return (

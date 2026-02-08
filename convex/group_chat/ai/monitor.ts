@@ -2,8 +2,8 @@
 // Triggered after each new message
 
 import { v } from "convex/values";
-import { action, internalMutation } from "../_generated/server";
-import { internal, api } from "../_generated/api";
+import { action, internalMutation } from "../../_generated/server";
+import { internal, api } from "../../_generated/api";
 import {
   buildContext,
   analyzeEngagement,
@@ -11,7 +11,7 @@ import {
   checkRateLimit,
   getOrCreateAIUser,
 } from "./engine";
-import { Id } from "../_generated/dataModel";
+import { Id } from "../../_generated/dataModel";
 
 // Main AI processing function (called after each new message)
 export const processMessage = action({
@@ -22,7 +22,7 @@ export const processMessage = action({
   handler: async (ctx, args) => {
     try {
       // 1. Check if AI is enabled for this project
-      const config = await ctx.runQuery(internal.ai.config.internalGetConfig, {
+      const config = await ctx.runQuery(internal.group_chat.ai.config.internalGetConfig, {
         projectId: args.projectId,
       });
 
@@ -64,7 +64,7 @@ export const processMessage = action({
       }
 
       // 6. Send AI message to chat
-      await ctx.runMutation(internal.ai.monitor.sendAIMessage, {
+      await ctx.runMutation(internal.group_chat.ai.monitor.sendAIMessage, {
         projectId: args.projectId,
         text: response.content,
         metadata: {
@@ -77,7 +77,7 @@ export const processMessage = action({
       });
 
       // 7. Update rate limit counters
-      await ctx.runMutation(internal.ai.config.updateRateLimits, {
+      await ctx.runMutation(internal.group_chat.ai.config.updateRateLimits, {
         projectId: args.projectId,
       });
 

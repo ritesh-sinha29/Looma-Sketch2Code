@@ -2,7 +2,7 @@
 // Handles AI settings per project
 
 import { v } from "convex/values";
-import { mutation, query, internalQuery, internalMutation } from "../_generated/server";
+import { mutation, query, internalQuery, internalMutation } from "../../_generated/server";
 
 // Get AI configuration for a project
 export const getConfig = query({

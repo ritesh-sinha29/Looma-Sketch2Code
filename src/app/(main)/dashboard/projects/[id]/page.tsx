@@ -59,7 +59,7 @@ const ProjectPage = () => {
   }
 
   return (
-    <div className="w-full h-full p-6">
+    <div className="w-full h-full p-6 overflow-y-auto">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl capitalize font-semibold  ">
           {project?.projectName}
@@ -125,7 +125,7 @@ const ProjectPage = () => {
             size="sm"
             variant="outline"
           >
-            Check requests <GitPullRequest className="w-4 h-4 ml-2" />
+            Merge requests <GitPullRequest className="w-4 h-4 ml-2" />
           </Button>
         </Link>
          
@@ -149,7 +149,7 @@ const ProjectPage = () => {
           </Button>
         </Link>
 
-        <Link href={`/dashboard/projects/${params.id}/tasks`}>
+        <Link href={`/dashboard/projects/${params.id}/task_manager`}>
           <Button
             className="text-sm px-6 cursor-pointer min-w-[160px]"
             size="sm"

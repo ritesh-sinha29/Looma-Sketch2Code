@@ -119,7 +119,7 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="w-full h-full p-6">
+    <div className="w-full h-full p-6 overflow-y-auto">
       <h1 className="text-3xl font-semibold font-pop mb-10">
         Welcome to Looma, {user?.name || "User"}
       </h1>

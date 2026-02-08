@@ -23,7 +23,7 @@ import type * as group_chat_presence from "../group_chat/presence.js";
 import type * as group_chat_reactions from "../group_chat/reactions.js";
 import type * as projects from "../projects.js";
 import type * as styleGuides from "../styleGuides.js";
-import type * as tasks from "../tasks.js";
+import type * as task_manager_tasks from "../task_manager/tasks.js";
 import type * as users from "../users.js";
 
 import type {
@@ -48,7 +48,7 @@ declare const fullApi: ApiFromModules<{
   "group_chat/reactions": typeof group_chat_reactions;
   projects: typeof projects;
   styleGuides: typeof styleGuides;
-  tasks: typeof tasks;
+  "task_manager/tasks": typeof task_manager_tasks;
   users: typeof users;
 }>;
 

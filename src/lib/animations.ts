@@ -1,7 +1,4 @@
-/**
- * Centralized animation configuration for Framer Motion
- * Ensures consistent animation timing and easing across the application
- */
+
 
 import { Variants } from "framer-motion";
 
@@ -166,4 +163,47 @@ export const sendButtonVariants: Variants = {
     },
   },
   tap: { scale: 0.95 },
+};
+
+// Task Manager Animations
+
+export const fadeIn: Variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+};
+
+export const slideUp: Variants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+};
+
+export const scaleIn: Variants = {
+  initial: { opacity: 0, scale: 0.95 },
+  animate: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 0.95 },
+};
+
+export const staggerContainer: Variants = {
+  animate: {
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+export const springTransition = {
+  type: "spring" as const,
+  stiffness: 300,
+  damping: 30,
+};
+
+export const reducedMotionTransition = {
+    duration: 0.1
+}
+
+export const cardHover: Variants = {
+  initial: { scale: 1 },
+  hover: { scale: 1.02, y: -2, transition: springTransition },
 };

@@ -55,6 +55,7 @@
     "@streamdown/code": "^1.0.1",
     "@streamdown/math": "^1.0.1",
     "@streamdown/mermaid": "^1.0.1",
+    "@xyflow/react": "^12.10.0",
     "ai": "^6.0.39",
     "allotment": "^1.20.5",
     "class-variance-authority": "^0.7.1",

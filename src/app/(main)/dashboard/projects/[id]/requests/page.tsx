@@ -36,8 +36,8 @@ const RequestsPage = () => {
   }
 
   return (
-    <div className="w-full h-full p-6 space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="w-full h-[calc(100vh-4rem)] flex flex-col p-6 space-y-6 overflow-hidden">
+      <div className="flex items-center gap-4 flex-none">
         <Link href={`/dashboard/projects/${params.id}`}>
           <Button variant="ghost" size="icon">
             <ChevronLeft className="h-4 w-4" />
@@ -51,7 +51,7 @@ const RequestsPage = () => {
         </div>
       </div>
 
-      <div className="border rounded-lg p-6 bg-card">
+      <div className="border rounded-lg p-6 bg-card flex-1 overflow-hidden min-h-0">
         <VersionManager projectId={params.id} isOwner={!!isOwner} />
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
 
 // =======================
@@ -29,9 +29,8 @@ export const createProject = mutation({
       throw new Error("Unauthorized");
     }
 
-
-    const inviteCode = Math.random().toString(36).substring(2, 10); 
-    const inviteLink = `http://localhost:3000/invite/${inviteCode}`; 
+    const inviteCode = Math.random().toString(36).substring(2, 10);
+    const inviteLink = `http://localhost:3000/invite/${inviteCode}`;
 
     const projectId = await ctx.db.insert("projects", {
       projectName: args.name,
@@ -64,7 +63,7 @@ export const getProjects = query({
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -97,6 +96,18 @@ export const getProjectById = query({
 });
 
 // ============================
+// INTERNAL: GET PROJECT BY ID (No Auth - for AI use)
+// ============================
+export const internalGetProjectById = internalQuery({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    return ctx.db.get(args.projectId);
+  },
+});
+
+// ============================
 // GET PROJECT BY INVITE CODE
 // ============================
 export const getProjectByInviteCode = query({
@@ -122,18 +133,15 @@ export const joinProject = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    console.log("Trying to get identity to join project!");
 
     if (!identity) {
       throw new Error("Unauthenticated");
     }
 
-    console.log("Identity checked , now checking for user...");
-
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -153,7 +161,10 @@ export const joinProject = mutation({
     }
 
     const newMembers = project.projectMembers
-      ? [...project.projectMembers, { userId: user._id, avatar: user.imageUrl || "" }]
+      ? [
+          ...project.projectMembers,
+          { userId: user._id, avatar: user.imageUrl || "" },
+        ]
       : [{ userId: user._id, avatar: user.imageUrl || "" }];
 
     await ctx.db.patch(args.projectId, {
@@ -183,7 +194,7 @@ export const getOwnerAndProjectMembers = query({
     }
 
     const members = await Promise.all(
-      (project.projectMembers || []).map((member) => ctx.db.get(member.userId))
+      (project.projectMembers || []).map((member) => ctx.db.get(member.userId)),
     );
 
     return {
@@ -192,7 +203,6 @@ export const getOwnerAndProjectMembers = query({
     };
   },
 });
-
 
 // ===============================
 // REMOVE PROJECT MEMBER
@@ -212,7 +222,7 @@ export const removeMember = mutation({
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -230,7 +240,7 @@ export const removeMember = mutation({
     }
 
     const newMembers = (project.projectMembers || []).filter(
-      (member) => member.userId !== args.memberId
+      (member) => member.userId !== args.memberId,
     );
 
     await ctx.db.patch(args.projectId, {
@@ -253,7 +263,7 @@ export const getMemberProjects = query({
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
-        q.eq("tokenIdentifier", identity.tokenIdentifier)
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
       )
       .unique();
 
@@ -261,13 +271,122 @@ export const getMemberProjects = query({
       throw new Error("User not found");
     }
 
-    // Since we can't easily index arrays in Convex for 'contains', 
+    // Since we can't easily index arrays in Convex for 'contains',
     // we fetch and filter. For scale, we'd use a separate joining table.
     const allProjects = await ctx.db.query("projects").collect();
 
-    return allProjects.filter((project) => 
-      project.ownerId !== user._id && 
-      project.projectMembers?.some((m) => m.userId === user._id)
+    return allProjects.filter(
+      (project) =>
+        project.ownerId !== user._id &&
+        project.projectMembers?.some((m) => m.userId === user._id),
     );
+  },
+});
+
+// ============================
+// GET ALL CODESPACE BY PROJECT ID
+// ============================
+export const getCodespaces = query({
+  args: {
+    projectId: v.id("projects"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new Error("Unauthenticated");
+    }
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    const codespaces = await ctx.db
+      .query("codespaces")
+      .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+      .collect();
+    return codespaces;
+  },
+});
+// ============================
+// SAVE CODESPACE (Use 'any' for code to be safe, or string)
+// ============================
+export const saveCodespace = mutation({
+  args: {
+    projectId: v.id("projects"),
+    code: v.string(),
+    description: v.optional(v.string()), // Added description
+    name: v.optional(v.string()), // Added name
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new Error("Unauthenticated");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_token", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier),
+      )
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const project = await ctx.db.get(args.projectId);
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    // Check if user is a member of the project
+    const isMember =
+      project.ownerId === user._id ||
+      project.projectMembers?.some((m) => m.userId === user._id);
+
+    if (!isMember) {
+      throw new Error("Unauthorized");
+    }
+
+    // Validate code is not empty
+    if (!args.code?.trim()) {
+      throw new Error("Code cannot be empty");
+    }
+
+    // Check for existing codespace with the same name (optimized query)
+    const existingCodespace = args.name
+      ? await ctx.db
+          .query("codespaces")
+          .withIndex("by_project", (q) => q.eq("projectId", args.projectId))
+          .filter((q) => q.eq(q.field("codespaceName"), args.name))
+          .first()
+      : null;
+
+    if (existingCodespace) {
+      // Update existing
+      await ctx.db.patch(existingCodespace._id, {
+        code: args.code,
+        codespaceDescription: args.description,
+        updatedBy: user._id, 
+        updatedAt: Date.now(),
+      });
+      return existingCodespace._id;
+    } else {
+      // Insert new
+      const codespaceId = await ctx.db.insert("codespaces", {
+        projectId: args.projectId,
+        code: args.code,
+        createdBy: user._id,
+        updatedBy: user._id,
+        codespaceDescription: args.description,
+        codespaceName: args.name,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+      return codespaceId;
+    }
   },
 });

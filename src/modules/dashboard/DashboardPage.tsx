@@ -143,11 +143,11 @@ const DashboardPage = () => {
             </Button>
           </div>
         </div>
-        <div className="grid grid-cols-4 min-[1460px]:grid-cols-5 gap-5 mt-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 min-[1460px]:grid-cols-5 gap-5 mt-5">
           {/* Create New Project Dialog */}
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
-              <Card className="h-[180px] w-[220px] shrink-0 flex items-center justify-center border-2 border-dashed border-muted-foreground/40 hover:border-primary transition cursor-pointer hover:bg-muted/10">
+              <Card className="h-[180px] w-full shrink-0 flex items-center justify-center border-2 border-dashed border-muted-foreground/40 hover:border-primary transition cursor-pointer hover:bg-muted/10">
                 <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <LucidePlus className="h-4 w-4" /> Create New Project
                 </span>
@@ -266,7 +266,7 @@ const DashboardPage = () => {
             Array.from({ length: 3 }).map((_, index) => (
               <Card
                 key={index}
-                className="h-[180px] w-[240px] shrink-0 p-3 overflow-hidden"
+                className="h-[180px] w-full shrink-0 p-3 overflow-hidden"
               >
                 <CardHeader>
                   <Skeleton className="h-6 w-3/4 rounded-md" />
@@ -290,7 +290,7 @@ const DashboardPage = () => {
                   href={`/dashboard/projects/${project._id}`}
                 >
                   <Card
-                    className={`h-[180px] w-[250px] shrink-0 bg-linear-to-br ${gradient} 
+                    className={`h-[180px] w-full shrink-0 bg-linear-to-br ${gradient} 
             hover:scale-[1.02] transition-transform cursor-pointer p-2! overflow-hidden relative`}
                   >
                     <CardHeader>

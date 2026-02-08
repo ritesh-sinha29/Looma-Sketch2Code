@@ -359,224 +359,229 @@ export function VersionManager({ projectId, isOwner }: VersionManagerProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <Tabs defaultValue="pending">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="pending">
-            <Clock className="h-4 w-4 mr-2" />
-            Pending ({pendingRequests?.length || 0})
-          </TabsTrigger>
-          <TabsTrigger value="history">
-            <GitBranch className="h-4 w-4 mr-2" />
-            History
-          </TabsTrigger>
-
-        </TabsList>
+    <div className="flex flex-col h-full space-y-6">
+      <Tabs defaultValue="pending" className="flex flex-col flex-1 min-h-0">
+        <div className="flex-none pb-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="pending">
+              <Clock className="h-4 w-4 mr-2" />
+              Pending ({pendingRequests?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="history">
+              <GitBranch className="h-4 w-4 mr-2" />
+              History
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Pending Reviews */}
-        <TabsContent value="pending" className="space-y-4">
-          {!isOwner ? (
-            <Card className="p-6 text-center text-muted-foreground">
-              Only owners can review changes
-            </Card>
-          ) : pendingRequests?.length === 0 ? (
-            <Card className="p-6 text-center text-muted-foreground">
-              <p>No pending reviews.</p>
-              <p className="text-xs mt-2">
-                (As the owner, your changes are auto-approved and appear in the History tab)
-              </p>
-            </Card>
-          ) : (
-            <>
-              {!selectedRequest ? (
-                <div className="space-y-3">
-                  {pendingRequests?.map((req) => (
-                    <Card
-                      key={req._id}
-                      className="p-4 cursor-pointer hover:border-sidebar-accent transition-all group"
-                      onClick={() => setSelectedRequest(req._id)}
-                    >
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-sm">
-                              {req.componentName}
+        <TabsContent value="pending" className="flex-1 overflow-y-auto min-h-0 pr-2 data-[state=inactive]:hidden mt-0">
+          <div className="space-y-4 pb-4">
+            {!isOwner ? (
+              <Card className="p-6 text-center text-muted-foreground">
+                Only owners can review changes
+              </Card>
+            ) : pendingRequests?.length === 0 ? (
+              <Card className="p-6 text-center text-muted-foreground">
+                <p>No pending reviews.</p>
+                <p className="text-xs mt-2">
+                  (As the owner, your changes are auto-approved and appear in the History tab)
+                </p>
+              </Card>
+            ) : (
+              <>
+                {!selectedRequest ? (
+                  <div className="space-y-3">
+                    {pendingRequests?.map((req) => (
+                      <Card
+                        key={req._id}
+                        className="p-4 cursor-pointer hover:border-sidebar-accent transition-all group"
+                        onClick={() => setSelectedRequest(req._id)}
+                      >
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-sm">
+                                {req.componentName}
+                              </span>
+                              <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-[10px] px-1.5 py-0 font-mono">
+                                +{req.linesAdded}
+                              </Badge>
+                              <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20 text-[10px] px-1.5 py-0 font-mono">
+                                -{req.linesRemoved}
+                              </Badge>
+                            </div>
+                            <span className="text-xs text-muted-foreground tabular-nums">
+                              {formatDistanceToNow(req.requestedAt, { addSuffix: true })}
                             </span>
-                            <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-[10px] px-1.5 py-0 font-mono">
-                              +{req.linesAdded}
-                            </Badge>
-                            <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20 text-[10px] px-1.5 py-0 font-mono">
-                              -{req.linesRemoved}
-                            </Badge>
                           </div>
-                          <span className="text-xs text-muted-foreground tabular-nums">
-                            {formatDistanceToNow(req.requestedAt, { addSuffix: true })}
-                          </span>
-                        </div>
-
-                        {req.proposedVersion?.description && (
-                          <p className="text-sm text-muted-foreground/80 line-clamp-2">
-                            {req.proposedVersion.description}
-                          </p>
-                        )}
-                        
-                        <div className="flex items-center gap-2 mt-1">
-                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <User className="h-3 w-3" />
-                            <span>by {req.requester.name || req.requester.email}</span>
+  
+                          {req.proposedVersion?.description && (
+                            <p className="text-sm text-muted-foreground/80 line-clamp-2">
+                              {req.proposedVersion.description}
+                            </p>
+                          )}
+                          
+                          <div className="flex items-center gap-2 mt-1">
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                              <User className="h-3 w-3" />
+                              <span>by {req.requester.name || req.requester.email}</span>
+                            </div>
                           </div>
                         </div>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <Card className="p-6 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-bold">
+                        {requestDetails?.componentName}
+                      </h2>
+                      <Button variant="ghost" onClick={() => setSelectedRequest(null)}>
+                        Back
+                      </Button>
+                    </div>
+  
+                    {requestDetails?.proposedVersion?.description && (
+                      <p className="text-muted-foreground">
+                        {requestDetails.proposedVersion.description}
+                      </p>
+                    )}
+  
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <h3 className="font-semibold mb-2">Current Version</h3>
+                        <pre className="bg-muted p-4 rounded text-xs overflow-x-auto max-h-96">
+                          {requestDetails?.currentVersion?.componentCode || "New component"}
+                        </pre>
                       </div>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <Card className="p-6 space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-bold">
-                      {requestDetails?.componentName}
-                    </h2>
-                    <Button variant="ghost" onClick={() => setSelectedRequest(null)}>
-                      Back
-                    </Button>
-                  </div>
-
-                  {requestDetails?.proposedVersion?.description && (
-                    <p className="text-muted-foreground">
-                      {requestDetails.proposedVersion.description}
-                    </p>
-                  )}
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <h3 className="font-semibold mb-2">Current Version</h3>
-                      <pre className="bg-muted p-4 rounded text-xs overflow-x-auto max-h-96">
-                        {requestDetails?.currentVersion?.componentCode || "New component"}
-                      </pre>
+                      <div>
+                        <h3 className="font-semibold mb-2">Proposed Version</h3>
+                        <pre className="bg-muted p-4 rounded text-xs overflow-x-auto max-h-96">
+                          {requestDetails?.proposedVersion?.componentCode}
+                        </pre>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold mb-2">Proposed Version</h3>
-                      <pre className="bg-muted p-4 rounded text-xs overflow-x-auto max-h-96">
-                        {requestDetails?.proposedVersion?.componentCode}
-                      </pre>
+  
+                    <div className="space-y-4">
+                      <Textarea
+                        placeholder="Add review comments..."
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        className="min-h-[100px]"
+                      />
+                      <div className="flex gap-3">
+                        <Button onClick={handleApprove} className="bg-green-600 hover:bg-green-700">
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Approve
+                        </Button>
+                        <Button onClick={handleReject} variant="destructive">
+                          <XCircle className="h-4 w-4 mr-2" />
+                          Reject
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <Textarea
-                      placeholder="Add review comments..."
-                      value={reviewComment}
-                      onChange={(e) => setReviewComment(e.target.value)}
-                      className="min-h-[100px]"
-                    />
-                    <div className="flex gap-3">
-                      <Button onClick={handleApprove} className="bg-green-600 hover:bg-green-700">
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Approve
-                      </Button>
-                      <Button onClick={handleReject} variant="destructive">
-                        <XCircle className="h-4 w-4 mr-2" />
-                        Reject
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              )}
-            </>
-          )}
+                  </Card>
+                )}
+              </>
+            )}
+          </div>
         </TabsContent>
 
         {/* Version History */}
-        <TabsContent value="history" className="space-y-4">
-          <Input
-            placeholder="Enter component name..."
-            value={componentName}
-            onChange={(e) => setComponentName(e.target.value)}
-          />
-
-          {versions?.length === 0 ? (
-            <Card className="p-6 text-center text-muted-foreground">
-              No versions found
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {[
-                ...(versions || []).map(v => ({ ...v, type: 'version' as const })),
-                ...(rejectedRequests || []).map(r => ({ ...r, type: 'rejected' as const }))
-              ]
-              .sort((a, b) => {
-                const timeA = a.type === 'version' ? a.createdAt : (a.reviewedAt || a.requestedAt);
-                const timeB = b.type === 'version' ? b.createdAt : (b.reviewedAt || b.requestedAt);
-                return timeB - timeA;
-              })
-              .map((item) => (
-                <Card
-                  key={item._id}
-                  className="p-4 hover:border-sidebar-accent transition-colors group"
-                >
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {item.type === 'version' ? (
-                          <Badge variant="secondary" className="font-mono text-xs">
-                            v{item.version}
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary" className="font-mono text-xs">
-                            {item.proposedVersion ? `v${item.proposedVersion.version}` : 'CR'}
-                          </Badge>
-                        )}
-                        
-                        <span className="font-medium text-sm">
-                          {item.componentName}
-                        </span>
-
-                        {item.type === 'version' && item.isApproved && (
-                          <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-[10px] px-1.5 py-0">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Approved
-                          </Badge>
-                        )}
-                        
-                        {item.type === 'rejected' && (
-                          <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20 text-[10px] px-1.5 py-0 font-mono">
-                            <XCircle className="h-3 w-3 mr-1" />
-                            Rejected
-                          </Badge>
-                        )}
-                      </div>
-                      <span className="text-xs text-muted-foreground tabular-nums">
-                        {formatDistanceToNow(
-                          item.type === 'version' ? item.createdAt : (item.reviewedAt || item.requestedAt), 
-                          { addSuffix: true }
-                        )}
-                      </span>
-                    </div>
-
-                    {((item.type === 'version' && item.description) || (item.type === 'rejected' && item.reviewComments)) && (
-                      <p className="text-sm text-muted-foreground/80 line-clamp-2">
-                        {item.type === 'version' ? item.description : item.reviewComments}
-                      </p>
-                    )}
-
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <User className="h-3 w-3" />
-                        {item.type === 'version' ? (
-                          <span>{item.creator.name || item.creator.email}</span>
-                        ) : (
-                          <span>
-                            Req by {item.requester.name || item.requester.email} 
-                            {item.reviewedBy && ` • Rejected by Owner`}
+        <TabsContent value="history" className="flex-1 overflow-y-auto min-h-0 pr-2 data-[state=inactive]:hidden mt-0">
+          <div className="space-y-4 pb-4">
+            <Input
+              placeholder="Enter component name..."
+              value={componentName}
+              onChange={(e) => setComponentName(e.target.value)}
+            />
+  
+            {versions?.length === 0 ? (
+              <Card className="p-6 text-center text-muted-foreground">
+                No versions found
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {[
+                  ...(versions || []).map(v => ({ ...v, type: 'version' as const })),
+                  ...(rejectedRequests || []).map(r => ({ ...r, type: 'rejected' as const }))
+                ]
+                .sort((a, b) => {
+                  const timeA = a.type === 'version' ? a.createdAt : (a.reviewedAt || a.requestedAt);
+                  const timeB = b.type === 'version' ? b.createdAt : (b.reviewedAt || b.requestedAt);
+                  return timeB - timeA;
+                })
+                .map((item) => (
+                  <Card
+                    key={item._id}
+                    className="p-4 hover:border-sidebar-accent transition-colors group"
+                  >
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {item.type === 'version' ? (
+                            <Badge variant="secondary" className="font-mono text-xs">
+                              v{item.version}
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary" className="font-mono text-xs">
+                              {item.proposedVersion ? `v${item.proposedVersion.version}` : 'CR'}
+                            </Badge>
+                          )}
+                          
+                          <span className="font-medium text-sm">
+                            {item.componentName}
                           </span>
-                        )}
+  
+                          {item.type === 'version' && item.isApproved && (
+                            <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-[10px] px-1.5 py-0">
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              Approved
+                            </Badge>
+                          )}
+                          
+                          {item.type === 'rejected' && (
+                            <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20 text-[10px] px-1.5 py-0 font-mono">
+                              <XCircle className="h-3 w-3 mr-1" />
+                              Rejected
+                            </Badge>
+                          )}
+                        </div>
+                        <span className="text-xs text-muted-foreground tabular-nums">
+                          {formatDistanceToNow(
+                            item.type === 'version' ? item.createdAt : (item.reviewedAt || item.requestedAt), 
+                            { addSuffix: true }
+                          )}
+                        </span>
+                      </div>
+  
+                      {((item.type === 'version' && item.description) || (item.type === 'rejected' && item.reviewComments)) && (
+                        <p className="text-sm text-muted-foreground/80 line-clamp-2">
+                          {item.type === 'version' ? item.description : item.reviewComments}
+                        </p>
+                      )}
+  
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <User className="h-3 w-3" />
+                          {item.type === 'version' ? (
+                            <span>{item.creator.name || item.creator.email}</span>
+                          ) : (
+                            <span>
+                              Req by {item.requester.name || item.requester.email} 
+                              {item.reviewedBy && ` • Rejected by Owner`}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}   
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>

@@ -27,6 +27,7 @@ import { format, isToday, isTomorrow, isPast, isFuture } from "date-fns";
 interface TaskBoardProps {
   projectId: Id<"projects">;
   isOwner: boolean;
+  currentUserId?: Id<"users">;
 }
 
 const COLUMNS = {
@@ -38,7 +39,7 @@ const COLUMNS = {
 
 type ColumnId = keyof typeof COLUMNS;
 
-export function TaskBoard({ projectId, isOwner }: TaskBoardProps) {
+export function TaskBoard({ projectId, isOwner, currentUserId }: TaskBoardProps) {
   const tasks = useQuery(api.task_manager.tasks.getTasks, { projectId });
   const updateStatus = useMutation(api.task_manager.tasks.updateTaskStatus);
 
@@ -69,12 +70,14 @@ export function TaskBoard({ projectId, isOwner }: TaskBoardProps) {
 
   // Group tasks by date for Timeline
   const timelineGroups = useMemo(() => {
-    if (!tasks) return { overdue: [], today: [], tomorrow: [], upcoming: [] };
-    const groups = { overdue: [], today: [], tomorrow: [], upcoming: [] } as Record<string, typeof tasks>;
+    if (!tasks) return { overdue: [], today: [], tomorrow: [], upcoming: [], completed: [] };
+    const groups = { overdue: [], today: [], tomorrow: [], upcoming: [], completed: [] } as Record<string, typeof tasks>;
     
     tasks.forEach((task) => {
         const date = new Date(task.deadline);
-        if (isPast(date) && !isToday(date) && task.status !== "done") {
+        if (task.status === "done") {
+            groups.completed.push(task);
+        } else if (isPast(date) && !isToday(date)) {
             groups.overdue.push(task);
         } else if (isToday(date)) {
             groups.today.push(task);
@@ -103,9 +106,6 @@ export function TaskBoard({ projectId, isOwner }: TaskBoardProps) {
     const activeId = active.id as string;
     const overId = over.id as string;
     
-    // Check if dropped on a column or a card
-    // If dropped on a column, overId is the column id (status)
-    // If dropped on a card, handle via that card's column
     
     let newStatus = overId as ColumnId;
 
@@ -177,12 +177,13 @@ export function TaskBoard({ projectId, isOwner }: TaskBoardProps) {
                                         title={title}
                                         tasks={columns[id as ColumnId]}
                                         isOwner={isOwner}
+                                        currentUserId={currentUserId}
                                     />
                                 ))}
                             </div>
                             <DragOverlay>
                                 {activeId ? (
-                                     <TaskCard task={tasks.find(t => t._id === activeId)!} isOwner={isOwner} />
+                                     <TaskCard task={tasks.find(t => t._id === activeId)!} isOwner={isOwner} currentUserId={currentUserId} />
                                 ) : null}
                             </DragOverlay>
                         </DndContext>
@@ -211,7 +212,7 @@ export function TaskBoard({ projectId, isOwner }: TaskBoardProps) {
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                             {groupTasks.map(task => (
                                                 <div key={task._id} className="opacity-90 hover:opacity-100 transition-opacity">
-                                                     <TaskCard task={task} isOwner={isOwner} />
+                                                     <TaskCard task={task} isOwner={isOwner} currentUserId={currentUserId} />
                                                 </div>
                                             ))}
                                         </div>

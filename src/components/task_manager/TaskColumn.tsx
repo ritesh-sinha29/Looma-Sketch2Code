@@ -1,15 +1,18 @@
 import { useDroppable } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { AnimatePresence, motion } from "framer-motion";
 import { staggerContainer, fadeIn } from "@/lib/animations";
 import { TaskCard } from "./TaskCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { Id } from "@/convex/_generated/dataModel";
 
 interface TaskColumnProps {
   id: string;
   title: string;
   tasks: any[];
   isOwner: boolean;
+  currentUserId?: Id<"users">;
 }
 
 const columnColors = {
@@ -19,13 +22,13 @@ const columnColors = {
   done: "bg-green-500/10 text-green-500",
 };
 
-export function Column({ id, title, tasks, isOwner }: TaskColumnProps) {
+export function Column({ id, title, tasks, isOwner, currentUserId }: TaskColumnProps) {
   const { setNodeRef } = useDroppable({
     id: id,
   });
 
   return (
-    <div className="flex flex-col flex-1 h-full bg-muted/50 rounded-lg p-2 min-w-[280px]">
+    <div className="flex flex-col flex-1 h-full bg-muted/50 rounded-lg p-2 min-w-[280px] border-2 border-dashed border-border/50">
       <div className="flex items-center justify-between p-3 font-semibold text-sm">
         <div className="flex items-center gap-2">
             <span className={`w-2 h-2 rounded-full ${id === 'todo' ? 'bg-slate-400' : id === 'in_progress' ? 'bg-blue-400' : id === 'review' ? 'bg-purple-400' : 'bg-green-400'}`} />
@@ -47,11 +50,13 @@ export function Column({ id, title, tasks, isOwner }: TaskColumnProps) {
             initial="initial"
             animate="animate"
         >
-          <AnimatePresence mode="popLayout" initial={false}>
-              {tasks.map((task) => (
-                <TaskCard key={task._id} task={task} isOwner={isOwner} />
-              ))}
-          </AnimatePresence>
+          <SortableContext items={tasks.map(t => t._id)} strategy={verticalListSortingStrategy}>
+            <AnimatePresence mode="popLayout" initial={false}>
+                {tasks.map((task) => (
+                  <TaskCard key={task._id} task={task} isOwner={isOwner} currentUserId={currentUserId} />
+                ))}
+            </AnimatePresence>
+          </SortableContext>
           
           {/* Placeholder for empty column to make it easier to drop */}
           {tasks.length === 0 && (
@@ -59,7 +64,7 @@ export function Column({ id, title, tasks, isOwner }: TaskColumnProps) {
                 variants={fadeIn}
                 initial="initial"
                 animate="animate"
-                className="h-full border-2 border-dashed border-muted-foreground/10 rounded-lg flex items-center justify-center text-xs text-muted-foreground p-8"
+                className="h-full rounded-lg flex items-center justify-center text-xs text-muted-foreground p-8"
              >
                 No tasks found
              </motion.div>

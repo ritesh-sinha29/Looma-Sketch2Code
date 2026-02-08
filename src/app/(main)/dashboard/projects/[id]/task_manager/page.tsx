@@ -42,7 +42,7 @@ const TasksPage = () => {
 
   return (
     <motion.div 
-      className="w-full h-full flex flex-col p-6 space-y-6 overflow-hidden"
+      className="w-full h-full flex flex-col p-6 space-y-6 overflow-hidden select-none"
       variants={staggerContainer}
       initial="initial"
       animate="animate"
@@ -72,7 +72,7 @@ const TasksPage = () => {
       </motion.div>
 
       <motion.div variants={slideUp} className="flex-1 min-h-0 overflow-hidden">
-        <TaskBoard projectId={params.id} isOwner={!!isOwner} />
+        <TaskBoard projectId={params.id} isOwner={!!isOwner} currentUserId={currentUser?._id} />
       </motion.div>
     </motion.div>
   );

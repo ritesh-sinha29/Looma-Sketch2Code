@@ -26,6 +26,7 @@ interface Task {
   projectId: Id<"projects">;
   taskName: string;
   description?: string;
+  status: "todo" | "in_progress" | "review" | "done";
   priority: "critical" | "high" | "medium" | "low";
   deadline: number;
   assigneeId: string;
@@ -46,7 +47,11 @@ const priorityColors = {
   low: "bg-blue-500/10 text-blue-500 border-blue-500/20",
 };
 
-export function TaskCard({ task, isOwner }: TaskCardProps & { isOwner: boolean }) {
+const doneStyle = "opacity-60 grayscale-[0.5]";
+
+export function TaskCard({ task, isOwner, currentUserId }: TaskCardProps & { isOwner: boolean; currentUserId?: Id<"users"> }) {
+  const canDrag = isOwner || (currentUserId && task.assigneeId === currentUserId);
+
   const {
     attributes,
     listeners,
@@ -54,7 +59,7 @@ export function TaskCard({ task, isOwner }: TaskCardProps & { isOwner: boolean }
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: task._id, data: { task } });
+  } = useSortable({ id: task._id, data: { task }, disabled: !canDrag });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -120,12 +125,11 @@ export function TaskCard({ task, isOwner }: TaskCardProps & { isOwner: boolean }
            animate={{ opacity: 1, y: 0 }}
            exit={{ opacity: 0, scale: 0.95 }}
            whileHover={{ scale: 1.02, transition: springTransition }}
-           transition={{ duration: 0.2 }}
-           className={`cursor-pointer group relative`}
+           className={`group relative ${canDrag ? "cursor-grab active:cursor-grabbing" : "cursor-default"} ${task.status === 'done' ? doneStyle : ''}`}
         >
-            <Card className={`hover:border-sidebar-accent transition-colors ${isDragging ? "ring-2 ring-primary opacity-50" : ""}`}>
+            <Card className={`hover:border-sidebar-accent transition-colors ${isDragging ? "ring-2 ring-primary opacity-50" : ""} ${task.status === 'done' ? "bg-muted/50" : ""}`}>
                 <CardHeader className="p-1 flex flex-row items-center justify-between space-y-0">
-                    <span className="text-sm font-medium line-clamp-2 leading-tight">
+                    <span className={`text-sm font-medium line-clamp-2 leading-tight ${task.status === 'done' ? 'line-through text-muted-foreground' : ''}`}>
                     {task.taskName}
                     </span>
                     {task.assignee && (
